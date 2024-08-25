@@ -5,3 +5,4 @@ PGPASSWORD="pgpass" pg_basebackup --host=pg-master -D /var/lib/postgresql/data -
 # Устанавливаем права для постгрес
 chown -R postgres:postgres /var/lib/postgresql/data
 
+shutdown now

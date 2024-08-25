@@ -12,3 +12,4 @@ echo "host replication all 0.0.0.0/0 trust" >> /var/lib/postgresql/data/pg_hba.c
 # Устанавливаем права для постгрес
 chown -R postgres:postgres /var/lib/postgresql/data
 
+shutdown now

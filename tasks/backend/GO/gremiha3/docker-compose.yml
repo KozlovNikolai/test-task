@@ -2,6 +2,7 @@ version: "3.9"
 services:
   pgMaster:
     image: postgres:14.8
+    restart: always
     container_name: pg-master
     environment:
       - POSTGRES_DB=mydb
@@ -16,6 +17,7 @@ services:
 
   pgReplica:
     image: postgres:14.8
+    restart: always
     depends_on:
       - pgMaster
     container_name: pg-replica
