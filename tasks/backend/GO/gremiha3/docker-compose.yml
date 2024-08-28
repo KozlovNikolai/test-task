@@ -9,7 +9,7 @@ services:
       - POSTGRES_USER=pguser
       - POSTGRES_PASSWORD=pgpass
     volumes:
-      - ./master:/docker-entrypoint-initdb.d/
+      - ./db/master:/docker-entrypoint-initdb.d/
       - master-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -24,7 +24,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=pgpass
     volumes:
-      - ./replica:/docker-entrypoint-initdb.d/
+      - ./db/replica:/docker-entrypoint-initdb.d/
       - replica-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
