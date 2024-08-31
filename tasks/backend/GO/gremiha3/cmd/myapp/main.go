@@ -2,8 +2,8 @@ package main
 
 import (
 	_ "github.com/KozlovNikolai/test-task/docs"
+	"github.com/KozlovNikolai/test-task/internal/app/transport/httpserver"
 	"github.com/KozlovNikolai/test-task/internal/pkg/config"
-	"github.com/KozlovNikolai/test-task/internal/server"
 )
 
 // @title 	Shop Service API
@@ -16,7 +16,7 @@ import (
 // @BasePath /
 func main() {
 	config.MustLoad()
-	server := server.NewServer()
+	server := httpserver.NewServer()
 
 	server.Run()
 }

@@ -11,7 +11,7 @@ import (
 // Config is ...
 type Config struct {
 	StorageWR         string        `yaml:"storage_wr" env-required:"true"`
-	StorageRO         string        `yaml:"storage_ro" env-required:"true"`
+	StorageRO         string        `yaml:"storage_ro" env-required:"false"`
 	RepoType          string        `yaml:"repo_type" env-required:"true"`
 	TokenTimeDuration time.Duration `yaml:"token_time_duration" env-required:"true"`
 	HTTPServer        `yaml:"http_server"`

@@ -1,67 +1,55 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE "product"(
-    "id" INTEGER NOT NULL,
+CREATE TABLE "products"(
+    "id"  serial NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "provider_id" INTEGER NOT NULL,
     "price" FLOAT(53) NOT NULL,
     "stock" INTEGER NOT NULL
 );
-ALTER TABLE
-    "product" ADD PRIMARY KEY("id");
-CREATE TABLE "order_state"(
-    "id" INTEGER NOT NULL,
+CREATE TABLE "order_states"(
+    "id"  serial NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL
 );
-ALTER TABLE
-    "order_state" ADD PRIMARY KEY("id");
-CREATE TABLE "user"(
-    "id" INTEGER NOT NULL,
+CREATE TABLE "users"(
+    "id"  serial NOT NULL PRIMARY KEY,
     "login" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" TEXT NOT NULL,
     "token" TEXT NOT NULL
 );
-ALTER TABLE
-    "user" ADD PRIMARY KEY("id");
-CREATE TABLE "provider"(
-    "id" INTEGER NOT NULL,
+CREATE TABLE "providers"(
+    "id"  serial NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "origin" TEXT NOT NULL
 );
-ALTER TABLE
-    "provider" ADD PRIMARY KEY("id");
-CREATE TABLE "item"(
-    "id" INTEGER NOT NULL,
+CREATE TABLE "items"(
+    "id"  serial NOT NULL PRIMARY KEY,
     "product_id" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "total_price" FLOAT(53) NOT NULL,
     "order_id" INTEGER NOT NULL
 );
-ALTER TABLE
-    "item" ADD PRIMARY KEY("id");
-CREATE TABLE "order"(
-    "id" INTEGER NOT NULL,
+CREATE TABLE "orders"(
+    "id"  serial NOT NULL PRIMARY KEY,
     "user_id" INTEGER NOT NULL,
     "state_id" INTEGER NOT NULL,
     "total_amount" FLOAT(53) NOT NULL,
     "created_at" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
 );
 ALTER TABLE
-    "order" ADD PRIMARY KEY("id");
+    "orders" ADD CONSTRAINT "orders_user_id_foreign" FOREIGN KEY("user_id") REFERENCES "users"("id");
 ALTER TABLE
-    "order" ADD CONSTRAINT "order_user_id_foreign" FOREIGN KEY("user_id") REFERENCES "user"("id");
+    "products" ADD CONSTRAINT "products_provider_id_foreign" FOREIGN KEY("provider_id") REFERENCES "providers"("id");
 ALTER TABLE
-    "product" ADD CONSTRAINT "product_provider_id_foreign" FOREIGN KEY("provider_id") REFERENCES "provider"("id");
+    "items" ADD CONSTRAINT "items_product_id_foreign" FOREIGN KEY("product_id") REFERENCES "products"("id");
 ALTER TABLE
-    "item" ADD CONSTRAINT "item_product_id_foreign" FOREIGN KEY("product_id") REFERENCES "product"("id");
+    "orders" ADD CONSTRAINT "orders_state_id_foreign" FOREIGN KEY("state_id") REFERENCES "order_states"("id");
 ALTER TABLE
-    "order" ADD CONSTRAINT "order_state_id_foreign" FOREIGN KEY("state_id") REFERENCES "order_state"("id");
-ALTER TABLE
-    "item" ADD CONSTRAINT "item_order_id_foreign" FOREIGN KEY("order_id") REFERENCES "order"("id");
+    "items" ADD CONSTRAINT "items_order_id_foreign" FOREIGN KEY("order_id") REFERENCES "orders"("id");
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-drop table "item", "order", "provider", "order_state", "user", "product";
+drop table "items", "orders", "providers", "order_states", "users", "products";
 -- +goose StatementEnd
