@@ -47,68 +47,6 @@ func (h HttpServer) CreateOrder(c *gin.Context) {
 
 	response := toResponseOrder(insertedorder)
 	c.JSON(http.StatusCreated, response)
-	// authID, authLogin, authRole := utils.GetLevel(c)
-	// oh.logger.Debug("принятые логин и роль из токена", zap.Int("id", authID), zap.String("login", authLogin), zap.String("role", authRole))
-	// // если запрос делает суперпользователь, то ему можно всё
-	// if authRole == "super" {
-	// 	_, err := oh.repoRO.GetUserByLogin(context.TODO(), authLogin)
-	// 	if err != nil {
-	// 		oh.logger.Error("Error getting user", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-	// 		return
-	// 	}
-	// 	var addOrder model.AddOrder
-	// 	// Заполняем структуру addOrder данными из запроса
-	// 	if err := c.ShouldBindJSON(&addOrder); err != nil {
-	// 		oh.logger.Error("Error binding JSON-addOrder", zap.Error(err))
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	var order model.Order
-	// 	// Заполняем структуру Order данными из addOrder
-	// 	order.CreatedAt = time.Now()
-	// 	order.UserID = addOrder.UserID
-	// 	order.StateID, _ = oh.repoRO.GetOrderStateByName(context.TODO(), "Created")
-	// 	order.TotalAmount = 0
-	// 	// Сохраняем товар в БД
-	// 	id, err := oh.repoWR.CreateOrder(context.TODO(), order)
-	// 	if err != nil {
-	// 		oh.logger.Error("Error creating Order", zap.Error(err))
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	order.ID = id
-	// 	c.JSON(http.StatusCreated, order)
-	// } else if authRole == "regular" { // если запрос делает обычный пользователь, то ему можно создавать только собственные данные
-	// 	user, err := oh.repoRO.GetUserByLogin(context.TODO(), authLogin)
-	// 	if err != nil {
-	// 		oh.logger.Error("Error getting user", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-	// 		return
-	// 	}
-	// 	var addOrder model.AddOrder
-	// 	// Заполняем структуру addOrder данными из запроса
-	// 	if err := c.ShouldBindJSON(&addOrder); err != nil {
-	// 		oh.logger.Error("Error binding JSON-addOrder", zap.Error(err))
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	var order model.Order
-	// 	// Заполняем структуру Order данными из addOrder
-	// 	order.CreatedAt = time.Now()
-	// 	order.UserID = user.ID
-	// 	order.StateID, _ = oh.repoRO.GetOrderStateByName(context.TODO(), "Created")
-	// 	order.TotalAmount = 0
-	// 	// Сохраняем товар в БД
-	// 	id, err := oh.repoWR.CreateOrder(context.TODO(), order)
-	// 	if err != nil {
-	// 		oh.logger.Error("Error creating Order", zap.Error(err))
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	order.ID = id
-	// 	c.JSON(http.StatusCreated, order)
-	// }
 }
 
 // GetOrder is ...
@@ -141,35 +79,6 @@ func (h HttpServer) GetOrder(c *gin.Context) {
 	response := toResponseOrder(order)
 
 	c.JSON(http.StatusCreated, response)
-
-	// authID, authLogin, authRole := utils.GetLevel(c)
-	// oh.logger.Debug("принятые логин и роль из токена", zap.Int("id", authID), zap.String("login", authLogin), zap.String("role", authRole))
-	// // если запрос делает суперпользователь, то ему можно всё
-	// if authRole == "super" {
-	// 	id, _ := strconv.Atoi(c.Param("id"))
-	// 	Order, err := oh.repoRO.GetOrderByID(context.TODO(), id)
-	// 	if err != nil {
-	// 		oh.logger.Error("Error getting Order", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, Order)
-	// } else if authRole == "regular" { // если запрос делает обычный пользователь, и его ID совпадает с user.ID заказа, то ему можно с ним работать
-	// 	id, _ := strconv.Atoi(c.Param("id"))
-	// 	order, err := oh.repoRO.GetOrderByID(context.TODO(), id)
-	// 	if err != nil {
-	// 		oh.logger.Error("Error getting Order", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
-	// 		return
-	// 	}
-	// 	if order.UserID != authID {
-	// 		oh.logger.Error("Это заказ другого пользователя")
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "Это заказ другого пользователя"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, order)
-	// }
-
 }
 
 // GetOrders is ...
@@ -205,19 +114,4 @@ func (h HttpServer) GetOrders(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, response)
-	// authID, authLogin, authRole := utils.GetLevel(c)
-	// oh.logger.Debug("принятые логин и роль из токена", zap.Int("id", authID), zap.String("login", authLogin), zap.String("role", authRole))
-	// // если запрос делает суперпользователь, то ему можно всё
-	// if authRole == "super" {
-	// 	users, err := oh.repoRO.GetAllOrders(context.TODO())
-	// 	if err != nil {
-	// 		oh.logger.Error("Error getting users", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "Users not found"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, users)
-	// 	return
-	// }
-	// oh.logger.Error("forbidden access level.")
-	// c.JSON(http.StatusForbidden, gin.H{"error": "forbidden access level."})
 }

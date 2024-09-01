@@ -1,8 +1,13 @@
 package httpserver
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/KozlovNikolai/test-task/internal/app/repository/inmemrepo"
@@ -102,12 +107,6 @@ func NewServer() *Server {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-	// Инициализация обработчиков
-	// userHandler := handlers.NewUserHandler(logger, repoWR, repoRO)
-	// productHandler := handlers.NewProductHandler(logger, repoWR, repoRO)
-	// providerHandler := handlers.NewProviderHandler(logger, repoWR, repoRO)
-	// orderHandler := handlers.NewOrderHandler(logger, repoWR, repoRO)
-	// orderStateHandler := handlers.NewOrderStateHandler(logger, repoWR, repoRO)
 
 	// add swagger
 	server.router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -159,8 +158,23 @@ func (s *Server) Run() {
 		WriteTimeout: config.Cfg.Timeout,
 		IdleTimeout:  config.Cfg.IdleTimout,
 	}
-
+	// listen to OS signals and gracefully shutdown HTTP server
+	stopped := make(chan struct{})
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+		<-sigint
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := server.Shutdown(ctx); err != nil {
+			log.Printf("HTTP Server Shutdown Error: %v", err)
+		}
+		close(stopped)
+	}()
 	if err := server.ListenAndServeTLS(config.CertFile, config.KeyFile); err != nil && err != http.ErrServerClosed {
 		s.logger.Fatal(fmt.Sprintf("Could not listen on %s", config.Cfg.Address), zap.Error(err))
 	}
+	<-stopped
+
+	log.Printf("Bye!")
 }

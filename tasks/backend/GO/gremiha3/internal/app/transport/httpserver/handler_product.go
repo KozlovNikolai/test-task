@@ -47,43 +47,6 @@ func (h HttpServer) CreateProduct(c *gin.Context) {
 
 	response := toResponseProduct(insertedproduct)
 	c.JSON(http.StatusCreated, response)
-
-	// authID, authLogin, authRole := utils.GetLevel(c)
-	// ph.logger.Debug("принятые логин и роль из токена", zap.Int("id", authID), zap.String("login", authLogin), zap.String("role", authRole))
-	// // если запрос делает суперпользователь, то ему можно всё
-	// if authRole == "super" {
-	// 	var addProduct model.AddProduct
-	// 	// Заполняем структуру addProduct данными из запроса
-	// 	if err := c.ShouldBindJSON(&addProduct); err != nil {
-	// 		ph.logger.Error("Error binding JSON-addProduct", zap.Error(err))
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	var product model.Product
-	// 	// Заполняем структуру Product данными из addProduct
-	// 	product.Name = addProduct.Name
-	// 	product.Price = addProduct.Price
-	// 	product.productID = addProduct.productID
-	// 	product.Stock = addProduct.Stock
-	// 	// Валидация данных товара
-	// 	if err := product.Validate(); err != nil {
-	// 		ph.logger.Error("Error creating product", zap.Error(err))
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	// Сохраняем товар в БД
-	// 	id, err := ph.repoWR.CreateProduct(context.TODO(), product)
-	// 	if err != nil {
-	// 		ph.logger.Error("Error creating product", zap.Error(err))
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// 	product.ID = id
-	// 	c.JSON(http.StatusCreated, product)
-	// } else if authRole == "regular" { // если запрос делает обычный пользователь, то не разрешаем:
-	// 	ph.logger.Error("forbidden access level.")
-	// 	c.JSON(http.StatusForbidden, gin.H{"error": "forbidden access level."})
-	// }
 }
 
 // GetProduct is ...
@@ -115,15 +78,6 @@ func (h HttpServer) GetProduct(c *gin.Context) {
 	response := toResponseProduct(product)
 
 	c.JSON(http.StatusCreated, response)
-
-	// id, _ := strconv.Atoi(c.Param("id"))
-	// product, err := ph.repoRO.GetProductByID(context.TODO(), id)
-	// if err != nil {
-	// 	ph.logger.Error("Error getting product", zap.Error(err))
-	// 	c.JSON(http.StatusNotFound, gin.H{"error": "product not found"})
-	// 	return
-	// }
-	// c.JSON(http.StatusOK, product)
 }
 
 // GetProducts is ...
@@ -158,12 +112,4 @@ func (h HttpServer) GetProducts(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, response)
-
-	// users, err := ph.repoRO.GetAllProducts(context.TODO())
-	// if err != nil {
-	// 	ph.logger.Error("Error getting users", zap.Error(err))
-	// 	c.JSON(http.StatusNotFound, gin.H{"error": "Users not found"})
-	// 	return
-	// }
-	// c.JSON(http.StatusOK, users)
 }

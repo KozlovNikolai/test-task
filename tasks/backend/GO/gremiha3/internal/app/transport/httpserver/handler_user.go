@@ -47,39 +47,6 @@ func (h HttpServer) CreateUser(c *gin.Context) {
 
 	response := toResponseUser(inserteduser)
 	c.JSON(http.StatusCreated, response)
-	// var addUser model.AddUser
-	// // Заполняем структуру addUser данными из запроса
-	// if err := c.ShouldBindJSON(&addUser); err != nil {
-	// 	u.logger.Error("Error binding JSON-addUser", zap.Error(err))
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// var user model.User
-	// // Заполняем структуру User данными из addUser
-	// user.Login = addUser.Login
-	// user.Password = addUser.Password
-	// user.Role = addUser.Role
-	// // Валидация данных пользователя
-	// if err := user.Validate(); err != nil {
-	// 	u.logger.Error("Error creating user", zap.Error(err))
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// // Хеширование пароля
-	// if err := user.HashPassword(); err != nil {
-	// 	u.logger.Error("Error creating user", zap.Error(err))
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
-	// 	return
-	// }
-	// // Сохраняем пользователя в базе с проверкой на уникальность email
-	// id, err := u.repoWR.CreateUser(context.TODO(), user)
-	// if err != nil {
-	// 	u.logger.Error("Error creating user", zap.Error(err))
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// user.ID = id
-	// c.JSON(http.StatusCreated, user)
 }
 
 // GetUser is ...
@@ -112,33 +79,6 @@ func (h HttpServer) GetUser(c *gin.Context) {
 	response := toResponseUser(user)
 
 	c.JSON(http.StatusCreated, response)
-	// authID, authLogin, authRole := utils.GetLevel(c)
-	// u.logger.Debug("принятые логин и роль из токена", zap.Int("id", authID), zap.String("login", authLogin), zap.String("role", authRole))
-	// // если запрос делает суперпользователь, то ему можно всё
-	// if authRole == "super" {
-	// 	id, _ := strconv.Atoi(c.Param("id"))
-	// 	user, err := u.repoRO.GetUserByID(context.TODO(), id)
-	// 	if err != nil {
-	// 		u.logger.Error("Error getting user", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, user)
-	// } else if authRole == "regular" { // если запрос делает обычный пользователь, то ему можно смотреть только собственные данные
-	// 	id, _ := strconv.Atoi(c.Param("id"))
-	// 	user, err := u.repoRO.GetUserByID(context.TODO(), authID)
-	// 	if err != nil {
-	// 		u.logger.Error("Error getting user", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-	// 		return
-	// 	}
-	// 	if user.ID != id {
-	// 		u.logger.Error("forbidden access level.")
-	// 		c.JSON(http.StatusForbidden, gin.H{"error": "forbidden access level."})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, user)
-	// }
 }
 
 // GetUserByLogin is ...
@@ -257,20 +197,4 @@ func (h HttpServer) GetUsers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, response)
-	// authID, authLogin, authRole := utils.GetLevel(c)
-	// u.logger.Debug("принятые логин и роль из токена", zap.Int("id", authID), zap.String("login", authLogin), zap.String("role", authRole))
-	// // если запрос делает суперпользователь, то ему можно всё
-	// if authRole == "super" {
-	// 	users, err := u.repoRO.GetAllUsers(context.TODO())
-	// 	if err != nil {
-	// 		u.logger.Error("Error getting users", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "Users not found"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, users)
-	// 	return
-	// }
-	// u.logger.Error("forbidden access level.")
-	// c.JSON(http.StatusForbidden, gin.H{"error": "forbidden access level."})
-
 }

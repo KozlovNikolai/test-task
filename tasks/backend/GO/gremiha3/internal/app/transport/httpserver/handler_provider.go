@@ -49,49 +49,6 @@ func (h HttpServer) CreateProvider(c *gin.Context) {
 	c.JSON(http.StatusCreated, response)
 }
 
-// server.RespondOK(response, w, r)
-// authID, authLogin, authRole := utils.GetLevel(c)
-// ph.logger.Debug("принятые логин и роль из токена", zap.Int("id", authID), zap.String("login", authLogin), zap.String("role", authRole))
-// // если запрос делает не суперпользователь, то выходим с ошибкой
-//
-//	if authRole != "super" {
-//		ph.logger.Error("forbidden access level.")
-//		c.JSON(http.StatusForbidden, gin.H{"error": "forbidden access level."})
-//		return
-//	}
-//
-// var addProvider model.AddProvider
-// // Заполняем структуру addProvider данными из запроса
-//
-//	if err := c.ShouldBindJSON(&addProvider); err != nil {
-//		ph.logger.Error("Error binding JSON-addProvider", zap.Error(err))
-//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//
-// var Provider model.Provider
-// // Заполняем структуру Provider данными из addProvider
-// Provider.Name = addProvider.Name
-// Provider.Origin = addProvider.Origin
-// // Валидация данных поставщика
-//
-//	if err := Provider.Validate(); err != nil {
-//		ph.logger.Error("Error creating Provider", zap.Error(err))
-//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//
-// // Сохраняем поставщика в БД
-// id, err := ph.repoWR.CreateProvider(context.TODO(), Provider)
-//
-//	if err != nil {
-//		ph.logger.Error("Error creating Provider", zap.Error(err))
-//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//
-// Provider.ID = id
-// c.JSON(http.StatusCreated, Provider)
 // GetProvider is ...
 // GetProviderTags 		godoc
 // @Summary			Посмотреть постащика по его id.
@@ -122,15 +79,6 @@ func (h HttpServer) GetProvider(c *gin.Context) {
 	response := toResponseProvider(provider)
 
 	c.JSON(http.StatusCreated, response)
-
-	// id, _ := strconv.Atoi(c.Param("id"))
-	// provider, err := ph.repoRO.GetProviderByID(context.TODO(), id)
-	// if err != nil {
-	// 	ph.logger.Error("Error getting provider", zap.Error(err))
-	// 	c.JSON(http.StatusNotFound, gin.H{"error": "Provider not found"})
-	// 	return
-	// }
-	// c.JSON(http.StatusOK, provider)
 }
 
 // GetProviders is ...
@@ -165,11 +113,4 @@ func (h HttpServer) GetProviders(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, response)
-	// providers, err := ph.repoRO.GetAllProviders(context.TODO())
-	// if err != nil {
-	// 	ph.logger.Error("Error getting providers", zap.Error(err))
-	// 	c.JSON(http.StatusNotFound, gin.H{"error": "Providers not found"})
-	// 	return
-	// }
-	// c.JSON(http.StatusOK, providers)
 }
