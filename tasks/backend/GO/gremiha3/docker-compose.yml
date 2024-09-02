@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  pgMaster:
+    image: postgres:14.8
+    restart: always
+    container_name: pg-master
+    environment:
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=pguser
+      - POSTGRES_PASSWORD=pgpass
+    volumes:
+      - ./master:/docker-entrypoint-initdb.d/
+      - master-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    user: postgres
+
+  pgReplica:
+    image: postgres:14.8
+    restart: always
+    depends_on:
+      - pgMaster
+    container_name: pg-replica
+    environment:
+      - POSTGRES_PASSWORD=pgpass
+    volumes:
+      - ./replica:/docker-entrypoint-initdb.d/
+      - replica-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    user: postgres
+
+  myapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JWT_KEY: ${JWT_KEY}
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./config.yml:/app/config.yml
+volumes:
+  master-data:
+  replica-data:
+

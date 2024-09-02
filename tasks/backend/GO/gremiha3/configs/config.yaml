@@ -1,0 +1,8 @@
+storage_wr: "postgres://dbuser:dbpass@localhost:5432/mydb?sslmode=disable"
+storage_ro: "postgres://dbuser:dbpass@localhost:5433/mydb?sslmode=disable"
+repo_type: "inmemory"
+token_time_duration: 30m
+http_server:
+  address: "0.0.0.0:8443"
+  timeout: 4s
+  idle_timout: 60s
