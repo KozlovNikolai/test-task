@@ -180,6 +180,26 @@ paths:
       tags:
       - Order
   /orderstate:
+    get:
+      description: Return OrderState with "id" number.
+      parameters:
+      - description: id of the order state
+        example: "1"
+        in: query
+        name: id
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpserver.OrderStateResponse'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Посмотреть тип статуса по его id.
+      tags:
+      - OrderState
     post:
       description: Создание типа статуса заказа.
       parameters:
@@ -204,37 +224,25 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      security:
-      - BearerAuth: []
       summary: Добавить тип статуса заказа.
-      tags:
-      - OrderState
-  /orderstate/{id}:
-    get:
-      description: Return OrderState with "id" number.
-      parameters:
-      - description: OrderState ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/httpserver.OrderStateResponse'
-        "404":
-          description: Not Found
-          schema:
-            type: string
-      security:
-      - BearerAuth: []
-      summary: Посмотреть тип статуса по его id.
       tags:
       - OrderState
   /orderstates:
     get:
       description: Return OrderStates list.
+      parameters:
+      - description: limit records on page
+        example: "10"
+        in: query
+        name: limit
+        required: true
+        type: string
+      - description: start of record output
+        example: "1"
+        in: query
+        name: offset
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -248,8 +256,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      security:
-      - BearerAuth: []
       summary: Получить список всех статусов.
       tags:
       - OrderState

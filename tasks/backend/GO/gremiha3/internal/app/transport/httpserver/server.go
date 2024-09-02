@@ -125,20 +125,16 @@ func NewServer() *Server {
 	root.POST("product", httpServer.CreateProduct)
 	root.GET("product", httpServer.GetProduct)
 	root.GET("products", httpServer.GetProducts)
+
+	root.POST("orderstate", httpServer.CreateOrderState)
+	root.GET("orderstate", httpServer.GetOrderState)
+	root.GET("orderstates", httpServer.GetOrderStates)
 	//#################################################################################
 
 	// Закрытые маршруты
 	authorized := server.router.Group("/")
 	authorized.Use(middlewares.AuthMiddleware())
 
-	// PRODUCT
-	// authorized.POST("/product", httpServer.CreateProduct)
-	// PROVIDER
-	// authorized.POST("/provider", httpServer.CreateProvider)
-	// ORDERSTATE
-	authorized.POST("/orderstate", httpServer.CreateOrderState)
-	authorized.GET("/orderstate/:id", httpServer.GetOrderState)
-	authorized.GET("/orderstates", httpServer.GetOrderStates)
 	// ORDER
 	authorized.POST("/order", httpServer.CreateOrder)
 	authorized.GET("/order/:id", httpServer.GetOrder)

@@ -16,7 +16,6 @@ import (
 // @Param				orderState body OrderStateRequest true "Create Order State type"
 // @Produce				application/json
 // @Tags				OrderState
-// @Security     	BearerAuth
 // @Success				200 {object} OrderStateResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
@@ -39,13 +38,13 @@ func (h HttpServer) CreateOrderState(c *gin.Context) {
 		return
 	}
 
-	insertedorderState, err := h.orderStateService.CreateOrderState(c, orderState)
+	insertedOrderState, err := h.orderStateService.CreateOrderState(c, orderState)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error DB saving orderState": err.Error()})
 		return
 	}
 
-	response := toResponseOrderState(insertedorderState)
+	response := toResponseOrderState(insertedOrderState)
 	c.JSON(http.StatusCreated, response)
 }
 
@@ -53,14 +52,13 @@ func (h HttpServer) CreateOrderState(c *gin.Context) {
 // GetOrderStateTags 		godoc
 // @Summary			Посмотреть тип статуса по его id.
 // @Description		Return OrderState with "id" number.
-// @Param			id path int true "OrderState ID"
+// @Param        id  query   string  false  "id of the order state" example(1)
 // @Tags			OrderState
-// @Security     	BearerAuth
 // @Success			200 {object} OrderStateResponse
 // @failure			404 {string} err.Error()
-// @Router			/orderstate/{id} [get]
+// @Router			/orderstate [get]
 func (h HttpServer) GetOrderState(c *gin.Context) {
-	orderStateID, err := strconv.Atoi(c.Param("id"))
+	orderStateID, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-orderState-id": err.Error()})
 		return
@@ -72,7 +70,7 @@ func (h HttpServer) GetOrderState(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{"orderState-not-found": err.Error()})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error-get-orderState": err.Error()})
 		return
 	}
 
@@ -86,25 +84,39 @@ func (h HttpServer) GetOrderState(c *gin.Context) {
 // @Summary			Получить список всех статусов.
 // @Description		Return OrderStates list.
 // @Tags			OrderState
-// @Security     	BearerAuth
+// @Param        limit  query   string  true  "limit records on page" example(10)
+// @Param        offset  query   string  true  "start of record output" example(1)
 // @Produce      json
 // @Success			200 {object} []OrderStateResponse
 // @failure			404 {string} err.Error()
 // @Router			/orderstates [get]
 func (h HttpServer) GetOrderStates(c *gin.Context) {
-	limit, err := strconv.Atoi(c.Param("limit"))
+	limit_query := c.Query("limit")
+	offset_query := c.Query("offset")
+
+	limit, err := strconv.Atoi(limit_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-limit": err.Error()})
 		return
 	}
-	offset, err := strconv.Atoi(c.Param("offset"))
+
+	offset, err := strconv.Atoi(offset_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-offset": err.Error()})
 		return
 	}
+	if limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"limit-must-be-greater-then-zero": ""})
+		return
+	}
+	if offset < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"offset-must-be-greater-then-zero": ""})
+		return
+	}
+
 	orderStates, err := h.orderStateService.GetOrderStates(c, limit, offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error get orderStates": err.Error()})
 		return
 	}
 
@@ -113,5 +125,5 @@ func (h HttpServer) GetOrderStates(c *gin.Context) {
 		response = append(response, toResponseOrderState(orderState))
 	}
 
-	c.JSON(http.StatusCreated, response)
+	c.JSON(http.StatusOK, response)
 }

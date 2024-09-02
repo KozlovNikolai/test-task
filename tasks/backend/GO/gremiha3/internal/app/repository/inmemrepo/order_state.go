@@ -19,11 +19,11 @@ type OrderStateRepo struct {
 func NewOrderStateRepo() *OrderStateRepo {
 	return &OrderStateRepo{
 		orderStates: map[int]models.OrderState{
-			0: {ID: 0, Name: "Created"},
-			1: {ID: 1, Name: "In progress"},
-			2: {ID: 2, Name: "Delivery"},
+			1: {ID: 1, Name: "Created"},
+			2: {ID: 2, Name: "In progress"},
+			3: {ID: 3, Name: "Delivery"},
 		},
-		nextOrderStatesID: 3,
+		nextOrderStatesID: 4,
 	}
 }
 
@@ -90,20 +90,20 @@ func (repo *OrderStateRepo) GetOrderStates(_ context.Context, limit int, offset 
 	sort.Ints(keys)
 	// выбираем записи с нужными ключами
 	var orderStates []models.OrderState
-	for i := offset; i < offset+limit && i < len(keys); i++ {
+	for i := offset; i < offset+limit && i <= len(keys); i++ {
 		orderStates = append(orderStates, repo.orderStates[i])
 	}
 
 	// мапим массив моделей в массив доменов
-	domainOrderStates := make([]domain.OrderState, len(orderStates))
+	domainorderStates := make([]domain.OrderState, len(orderStates))
 	for i, orderState := range orderStates {
-		domainOrderState, err := orderStateToDomain(orderState)
+		domainorderState, err := orderStateToDomain(orderState)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create domain OrderState: %w", err)
+			return nil, fmt.Errorf("failed to create domain User: %w", err)
 		}
-		domainOrderStates[i] = domainOrderState
+		domainorderStates[i] = domainorderState
 	}
-	return domainOrderStates, nil
+	return domainorderStates, nil
 }
 
 // UpdateOrderState implements services.IOrderStateRepository.

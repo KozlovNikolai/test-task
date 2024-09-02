@@ -135,12 +135,37 @@ const docTemplate = `{
             }
         },
         "/orderstate": {
-            "post": {
-                "security": [
+            "get": {
+                "description": "Return OrderState with \"id\" number.",
+                "tags": [
+                    "OrderState"
+                ],
+                "summary": "Посмотреть тип статуса по его id.",
+                "parameters": [
                     {
-                        "BearerAuth": []
+                        "type": "string",
+                        "example": "1",
+                        "description": "id of the order state",
+                        "name": "id",
+                        "in": "query"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.OrderStateResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
                 "description": "Создание типа статуса заказа.",
                 "produces": [
                     "application/json"
@@ -182,50 +207,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/orderstate/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Return OrderState with \"id\" number.",
-                "tags": [
-                    "OrderState"
-                ],
-                "summary": "Посмотреть тип статуса по его id.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "OrderState ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.OrderStateResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/orderstates": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Return OrderStates list.",
                 "produces": [
                     "application/json"
@@ -234,6 +217,24 @@ const docTemplate = `{
                     "OrderState"
                 ],
                 "summary": "Получить список всех статусов.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "10",
+                        "description": "limit records on page",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1",
+                        "description": "start of record output",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
