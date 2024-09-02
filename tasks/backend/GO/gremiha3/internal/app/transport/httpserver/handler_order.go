@@ -13,11 +13,11 @@ import (
 // CreateOrderTags		godoc
 // @Summary				Добавить заказ.
 // @Description			Создание заказа для дальнейшего его заполнения.
-// @Param				order body model.AddOrder true "Create Order"
+// @Param				order body OrderRequest true "Create Order"
 // @Produce				application/json
 // @Tags				Order
 // @Security     	BearerAuth
-// @Success				200 {object} model.Order
+// @Success				200 {object} OrderResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
 // @Router				/order [post]
@@ -56,7 +56,7 @@ func (h HttpServer) CreateOrder(c *gin.Context) {
 // @Param			id path int true "Order ID"
 // @Tags			Order
 // @Security     	BearerAuth
-// @Success			200 {object} model.Order
+// @Success			200 {object} OrderResponse
 // @failure			404 {string} err.Error()
 // @Router			/order/{id} [get]
 func (h HttpServer) GetOrder(c *gin.Context) {
@@ -88,7 +88,7 @@ func (h HttpServer) GetOrder(c *gin.Context) {
 // @Tags			Order
 // @Security     	BearerAuth
 // @Produce      json
-// @Success			200 {object} []model.Order
+// @Success			200 {object} []OrderResponse
 // @failure			404 {string} err.Error()
 // @Router			/orders [get]
 func (h HttpServer) GetOrders(c *gin.Context) {

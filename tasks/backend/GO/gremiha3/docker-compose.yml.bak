@@ -29,6 +29,17 @@ services:
     ports:
       - "5433:5432"
     user: postgres
+
+  myapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JWT_KEY: ${JWT_KEY}
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./config.yml:/app/config.yml
 volumes:
   master-data:
   replica-data:

@@ -13,11 +13,11 @@ import (
 // CreateProductTags		godoc
 // @Summary				Добавить товар.
 // @Description			Save register data of user in Repo.
-// @Param				product body model.AddProduct true "Create product"
+// @Param				product body ProductRequest true "Create product"
 // @Produce				application/json
 // @Tags				Product
 // @Security     	BearerAuth
-// @Success				200 {object} model.Product
+// @Success				200 {object} ProductResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
 // @Router				/product [post]
@@ -55,7 +55,7 @@ func (h HttpServer) CreateProduct(c *gin.Context) {
 // @Description		Return product with "id" number.
 // @Param			product_id path int true "Product ID"
 // @Tags			Product
-// @Success			200 {object} model.Product
+// @Success			200 {object} ProductResponse
 // @failure			404 {string} err.Error()
 // @Router			/product/{product_id} [get]
 func (h HttpServer) GetProduct(c *gin.Context) {
@@ -86,7 +86,7 @@ func (h HttpServer) GetProduct(c *gin.Context) {
 // @Description		Return products list.
 // @Tags			Product
 // @Produce      json
-// @Success			200 {object} []model.Product
+// @Success			200 {object} []ProductResponse
 // @failure			404 {string} err.Error()
 // @Router			/products [get]
 func (h HttpServer) GetProducts(c *gin.Context) {

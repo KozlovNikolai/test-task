@@ -3,8 +3,10 @@ package inmemrepo
 import (
 	"context"
 	"fmt"
+	"log"
 	"sort"
 	"sync"
+	"time"
 
 	"github.com/KozlovNikolai/test-task/internal/app/domain"
 	"github.com/KozlovNikolai/test-task/internal/app/repository/models"
@@ -24,23 +26,33 @@ func NewUserRepo() *UserRepo {
 }
 
 // CreateUser implements services.IUserRepository.
-func (repo *UserRepo) CreateUser(_ context.Context, user domain.User) (domain.User, error) {
+func (repo *UserRepo) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
 
+	if _, err := repo.GetUserByLogin(ctx, user.Login()); err == nil {
+		return domain.User{}, fmt.Errorf("the login %s already exists", user.Login())
+	}
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
+
 	// мапим домен в модель
 	dbUser := domainToUser(user)
 	dbUser.ID = repo.nextUsersID
-
+	dbUser.CreatedAt = time.Now()
+	dbUser.UpdatedAt = dbUser.CreatedAt
+	dbUser.Role = "regular"
 	// инкрементируем счетчик записей
 	repo.nextUsersID++
 	// сохраняем
 	repo.users[dbUser.ID] = dbUser
+
+	log.Println(repo.users[dbUser.ID])
+
 	// мапим модель в домен
 	domainUser, err := userToDomain(dbUser)
 	if err != nil {
 		return domain.User{}, fmt.Errorf("failed to create domain User: %w", err)
 	}
+	log.Println(domainUser)
 	return domainUser, nil
 }
 
@@ -97,6 +109,9 @@ func (repo *UserRepo) GetUserByLogin(_ context.Context, login string) (domain.Us
 			dbUser = user
 			break
 		}
+	}
+	if dbUser.ID == 0 {
+		return domain.User{}, fmt.Errorf("user with login %s - %w", login, domain.ErrNotFound)
 	}
 	domainUser, err := userToDomain(dbUser)
 	if err != nil {

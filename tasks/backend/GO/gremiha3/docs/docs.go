@@ -37,7 +37,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AddOrder"
+                            "$ref": "#/definitions/httpserver.OrderRequest"
                         }
                     }
                 ],
@@ -45,7 +45,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Order"
+                            "$ref": "#/definitions/httpserver.OrderResponse"
                         }
                     },
                     "400": {
@@ -88,7 +88,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Order"
+                            "$ref": "#/definitions/httpserver.OrderResponse"
                         }
                     },
                     "404": {
@@ -121,7 +121,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Order"
+                                "$ref": "#/definitions/httpserver.OrderResponse"
                             }
                         }
                     },
@@ -156,7 +156,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AddOrderState"
+                            "$ref": "#/definitions/httpserver.OrderStateRequest"
                         }
                     }
                 ],
@@ -164,7 +164,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.OrderState"
+                            "$ref": "#/definitions/httpserver.OrderStateResponse"
                         }
                     },
                     "400": {
@@ -207,7 +207,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.OrderState"
+                            "$ref": "#/definitions/httpserver.OrderStateResponse"
                         }
                     },
                     "404": {
@@ -240,7 +240,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.OrderState"
+                                "$ref": "#/definitions/httpserver.OrderStateResponse"
                             }
                         }
                     },
@@ -275,7 +275,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AddProduct"
+                            "$ref": "#/definitions/httpserver.ProductRequest"
                         }
                     }
                 ],
@@ -283,7 +283,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Product"
+                            "$ref": "#/definitions/httpserver.ProductResponse"
                         }
                     },
                     "400": {
@@ -321,7 +321,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Product"
+                            "$ref": "#/definitions/httpserver.ProductResponse"
                         }
                     },
                     "404": {
@@ -349,7 +349,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Product"
+                                "$ref": "#/definitions/httpserver.ProductResponse"
                             }
                         }
                     },
@@ -384,7 +384,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AddProvider"
+                            "$ref": "#/definitions/httpserver.ProviderRequest"
                         }
                     }
                 ],
@@ -392,7 +392,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Provider"
+                            "$ref": "#/definitions/httpserver.ProviderResponse"
                         }
                     },
                     "400": {
@@ -430,7 +430,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Provider"
+                            "$ref": "#/definitions/httpserver.ProviderResponse"
                         }
                     },
                     "404": {
@@ -458,7 +458,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Provider"
+                                "$ref": "#/definitions/httpserver.ProviderResponse"
                             }
                         }
                     },
@@ -471,33 +471,30 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/login": {
+        "/signin": {
             "post": {
-                "description": "Returns the authorization status",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Sign in as an existing user.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Авторизоваться по логину и паролю.",
+                "summary": "Авторизоваться.",
                 "parameters": [
                     {
-                        "description": "Login user. Логин указывается в формате электронной почты. Пароль не меньше 6 символов. Роль: super или regular",
-                        "name": "user",
+                        "description": "SignIn user. Логин указывается в формате электронной почты. Пароль не меньше 6 символов. Роль: super или regular",
+                        "name": "UserRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.LoginUser"
+                            "$ref": "#/definitions/httpserver.UserRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Logged in",
+                        "description": "OK",
                         "schema": {
                             "type": "string"
                         }
@@ -510,6 +507,86 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "description": "Sign up a new user in the system.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Загеристрироваться.",
+                "parameters": [
+                    {
+                        "description": "Create user. Логин указывается в формате электронной почты. Пароль не меньше 6 символов. Роль: super или regular",
+                        "name": "UserRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error-to-create-domain-user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "description": "Return user with \"id\" number.",
+                "tags": [
+                    "User"
+                ],
+                "summary": "Посмотреть пользователя по его id.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of the user",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "login of the user",
+                        "name": "login",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.UserResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "string"
                         }
@@ -542,93 +619,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.User"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/register": {
-            "post": {
-                "description": "Save register data of user in Repo.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Добавить пользователя.",
-                "parameters": [
-                    {
-                        "description": "Create user. Логин указывается в формате электронной почты. Пароль не меньше 6 символов. Роль: super или regular",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.AddUser"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.User"
-                        }
-                    },
-                    "201": {
-                        "description": "Пользователь успешно зарегистрирован.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/{user_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Return user with \"id\" number.",
-                "tags": [
-                    "User"
-                ],
-                "summary": "Посмотреть пользователя по его id.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.User"
+                            "$ref": "#/definitions/httpserver.UserResponse"
                         }
                     },
                     "404": {
@@ -661,7 +652,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.User"
+                                "$ref": "#/definitions/httpserver.UserResponse"
                             }
                         }
                     },
@@ -676,89 +667,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.AddOrder": {
+        "httpserver.OrderRequest": {
             "type": "object",
             "properties": {
                 "user_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 }
             }
         },
-        "model.AddOrderState": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Закрыт"
-                }
-            }
-        },
-        "model.AddProduct": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "яблоки"
-                },
-                "price": {
-                    "type": "number",
-                    "example": 132.12
-                },
-                "provider_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "stock": {
-                    "type": "integer",
-                    "example": 500
-                }
-            }
-        },
-        "model.AddProvider": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Microsoft"
-                },
-                "origin": {
-                    "type": "string",
-                    "example": "Kazakhstan"
-                }
-            }
-        },
-        "model.AddUser": {
-            "type": "object",
-            "properties": {
-                "login": {
-                    "type": "string",
-                    "example": "cmd@cmd.ru"
-                },
-                "password": {
-                    "type": "string",
-                    "example": "123456"
-                },
-                "role": {
-                    "type": "string",
-                    "example": "super"
-                }
-            }
-        },
-        "model.LoginUser": {
-            "type": "object",
-            "properties": {
-                "login": {
-                    "type": "string",
-                    "example": "cmd@cmd.ru"
-                },
-                "password": {
-                    "type": "string",
-                    "example": "123456"
-                }
-            }
-        },
-        "model.Order": {
+        "httpserver.OrderResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -766,12 +683,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 },
                 "state_id": {
                     "type": "integer"
@@ -784,7 +695,15 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OrderState": {
+        "httpserver.OrderStateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpserver.OrderStateResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -795,7 +714,24 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Product": {
+        "httpserver.ProductRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "provider_id": {
+                    "type": "integer"
+                },
+                "stock": {
+                    "type": "integer"
+                }
+            }
+        },
+        "httpserver.ProductResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -815,7 +751,18 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Provider": {
+        "httpserver.ProviderRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "origin": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpserver.ProviderResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -829,7 +776,20 @@ const docTemplate = `{
                 }
             }
         },
-        "model.User": {
+        "httpserver.UserRequest": {
+            "type": "object",
+            "properties": {
+                "login": {
+                    "type": "string",
+                    "example": "cmd@cmd.ru"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "httpserver.UserResponse": {
             "type": "object",
             "properties": {
                 "id": {

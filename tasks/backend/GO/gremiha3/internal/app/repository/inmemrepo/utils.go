@@ -56,21 +56,25 @@ func orderStateToDomain(orderState models.OrderState) (domain.OrderState, error)
 
 func domainToUser(user domain.User) models.User {
 	return models.User{
-		ID:       user.ID(),
-		Login:    user.Login(),
-		Password: user.Password(),
-		Role:     user.Role(),
-		Token:    user.Token(),
+		ID:        user.ID(),
+		Login:     user.Login(),
+		Password:  user.Password(),
+		Role:      user.Role(),
+		Token:     user.Token(),
+		CreatedAt: user.CreratedAt(),
+		UpdatedAt: user.UpdatedAt(),
 	}
 }
 
 func userToDomain(user models.User) (domain.User, error) {
 	return domain.NewUser(domain.NewUserData{
-		ID:       user.ID,
-		Login:    user.Login,
-		Password: user.Password,
-		Role:     user.Role,
-		Token:    user.Token,
+		ID:        user.ID,
+		Login:     user.Login,
+		Password:  user.Password,
+		Role:      user.Role,
+		Token:     user.Token,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	})
 }
 

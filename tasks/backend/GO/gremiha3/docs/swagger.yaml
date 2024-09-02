@@ -1,71 +1,15 @@
 definitions:
-  model.AddOrder:
+  httpserver.OrderRequest:
     properties:
       user_id:
-        example: 1
         type: integer
     type: object
-  model.AddOrderState:
-    properties:
-      name:
-        example: Закрыт
-        type: string
-    type: object
-  model.AddProduct:
-    properties:
-      name:
-        example: яблоки
-        type: string
-      price:
-        example: 132.12
-        type: number
-      provider_id:
-        example: 1
-        type: integer
-      stock:
-        example: 500
-        type: integer
-    type: object
-  model.AddProvider:
-    properties:
-      name:
-        example: Microsoft
-        type: string
-      origin:
-        example: Kazakhstan
-        type: string
-    type: object
-  model.AddUser:
-    properties:
-      login:
-        example: cmd@cmd.ru
-        type: string
-      password:
-        example: "123456"
-        type: string
-      role:
-        example: super
-        type: string
-    type: object
-  model.LoginUser:
-    properties:
-      login:
-        example: cmd@cmd.ru
-        type: string
-      password:
-        example: "123456"
-        type: string
-    type: object
-  model.Order:
+  httpserver.OrderResponse:
     properties:
       created_at:
         type: string
       id:
         type: integer
-      items:
-        items:
-          type: integer
-        type: array
       state_id:
         type: integer
       total_amount:
@@ -73,14 +17,30 @@ definitions:
       user_id:
         type: integer
     type: object
-  model.OrderState:
+  httpserver.OrderStateRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  httpserver.OrderStateResponse:
     properties:
       id:
         type: integer
       name:
         type: string
     type: object
-  model.Product:
+  httpserver.ProductRequest:
+    properties:
+      name:
+        type: string
+      price:
+        type: number
+      provider_id:
+        type: integer
+      stock:
+        type: integer
+    type: object
+  httpserver.ProductResponse:
     properties:
       id:
         type: integer
@@ -93,7 +53,14 @@ definitions:
       stock:
         type: integer
     type: object
-  model.Provider:
+  httpserver.ProviderRequest:
+    properties:
+      name:
+        type: string
+      origin:
+        type: string
+    type: object
+  httpserver.ProviderResponse:
     properties:
       id:
         type: integer
@@ -102,7 +69,16 @@ definitions:
       origin:
         type: string
     type: object
-  model.User:
+  httpserver.UserRequest:
+    properties:
+      login:
+        example: cmd@cmd.ru
+        type: string
+      password:
+        example: "123456"
+        type: string
+    type: object
+  httpserver.UserResponse:
     properties:
       id:
         type: integer
@@ -130,14 +106,14 @@ paths:
         name: order
         required: true
         schema:
-          $ref: '#/definitions/model.AddOrder'
+          $ref: '#/definitions/httpserver.OrderRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Order'
+            $ref: '#/definitions/httpserver.OrderResponse'
         "400":
           description: Bad Request
           schema:
@@ -164,7 +140,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Order'
+            $ref: '#/definitions/httpserver.OrderResponse'
         "404":
           description: Not Found
           schema:
@@ -184,7 +160,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Order'
+              $ref: '#/definitions/httpserver.OrderResponse'
             type: array
         "404":
           description: Not Found
@@ -204,14 +180,14 @@ paths:
         name: orderState
         required: true
         schema:
-          $ref: '#/definitions/model.AddOrderState'
+          $ref: '#/definitions/httpserver.OrderStateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.OrderState'
+            $ref: '#/definitions/httpserver.OrderStateResponse'
         "400":
           description: Bad Request
           schema:
@@ -238,7 +214,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.OrderState'
+            $ref: '#/definitions/httpserver.OrderStateResponse'
         "404":
           description: Not Found
           schema:
@@ -258,7 +234,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.OrderState'
+              $ref: '#/definitions/httpserver.OrderStateResponse'
             type: array
         "404":
           description: Not Found
@@ -278,14 +254,14 @@ paths:
         name: product
         required: true
         schema:
-          $ref: '#/definitions/model.AddProduct'
+          $ref: '#/definitions/httpserver.ProductRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Product'
+            $ref: '#/definitions/httpserver.ProductResponse'
         "400":
           description: Bad Request
           schema:
@@ -312,7 +288,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Product'
+            $ref: '#/definitions/httpserver.ProductResponse'
         "404":
           description: Not Found
           schema:
@@ -330,7 +306,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Product'
+              $ref: '#/definitions/httpserver.ProductResponse'
             type: array
         "404":
           description: Not Found
@@ -348,14 +324,14 @@ paths:
         name: Provider
         required: true
         schema:
-          $ref: '#/definitions/model.AddProvider'
+          $ref: '#/definitions/httpserver.ProviderRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Provider'
+            $ref: '#/definitions/httpserver.ProviderResponse'
         "400":
           description: Bad Request
           schema:
@@ -382,7 +358,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Provider'
+            $ref: '#/definitions/httpserver.ProviderResponse'
         "404":
           description: Not Found
           schema:
@@ -400,7 +376,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Provider'
+              $ref: '#/definitions/httpserver.ProviderResponse'
             type: array
         "404":
           description: Not Found
@@ -409,47 +385,22 @@ paths:
       summary: Получить список всех поставщиков.
       tags:
       - Provider
-  /user/{user_id}:
-    get:
-      description: Return user with "id" number.
-      parameters:
-      - description: User ID
-        in: path
-        name: user_id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.User'
-        "404":
-          description: Not Found
-          schema:
-            type: string
-      security:
-      - BearerAuth: []
-      summary: Посмотреть пользователя по его id.
-      tags:
-      - User
-  /user/login:
+  /signin:
     post:
-      consumes:
-      - application/json
-      description: Returns the authorization status
+      description: Sign in as an existing user.
       parameters:
-      - description: 'Login user. Логин указывается в формате электронной почты. Пароль
-          не меньше 6 символов. Роль: super или regular'
+      - description: 'SignIn user. Логин указывается в формате электронной почты.
+          Пароль не меньше 6 символов. Роль: super или regular'
         in: body
-        name: user
+        name: UserRequest
         required: true
         schema:
-          $ref: '#/definitions/model.LoginUser'
+          $ref: '#/definitions/httpserver.UserRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Logged in
+          description: OK
           schema:
             type: string
         "400":
@@ -460,9 +411,62 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: Авторизоваться по логину и паролю.
+      summary: Авторизоваться.
       tags:
       - Auth
+  /signup:
+    post:
+      description: Sign up a new user in the system.
+      parameters:
+      - description: 'Create user. Логин указывается в формате электронной почты.
+          Пароль не меньше 6 символов. Роль: super или regular'
+        in: body
+        name: UserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/httpserver.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/httpserver.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: error-to-create-domain-user
+          schema:
+            type: string
+      summary: Загеристрироваться.
+      tags:
+      - Auth
+  /user:
+    get:
+      description: Return user with "id" number.
+      parameters:
+      - description: id of the user
+        in: query
+        name: id
+        type: string
+      - description: login of the user
+        in: query
+        name: login
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpserver.UserResponse'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Посмотреть пользователя по его id.
+      tags:
+      - User
   /user/login/{login}:
     get:
       description: Return user with "login" value.
@@ -476,7 +480,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.User'
+            $ref: '#/definitions/httpserver.UserResponse'
         "404":
           description: Not Found
           schema:
@@ -486,39 +490,6 @@ paths:
       summary: Посмотреть пользователя по его логину.
       tags:
       - User
-  /user/register:
-    post:
-      description: Save register data of user in Repo.
-      parameters:
-      - description: 'Create user. Логин указывается в формате электронной почты.
-          Пароль не меньше 6 символов. Роль: super или regular'
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/model.AddUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.User'
-        "201":
-          description: Пользователь успешно зарегистрирован.
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Добавить пользователя.
-      tags:
-      - Auth
   /users:
     get:
       description: Return users list.
@@ -529,7 +500,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.User'
+              $ref: '#/definitions/httpserver.UserResponse'
             type: array
         "404":
           description: Not Found

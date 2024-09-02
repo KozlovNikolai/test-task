@@ -111,14 +111,20 @@ func NewServer() *Server {
 	// add swagger
 	server.router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	root := server.router.Group("/")
+	root.POST("signup", httpServer.SignUp)
+	root.POST("signin", httpServer.SignIn)
+
+	root.GET("user", httpServer.GetUser)
+	//#################################################################################
 	// Открытые маршруты
-	openRouter := server.router.Group("/")
-	openRouter.POST("/user/register", httpServer.CreateUser)
-	openRouter.POST("/user/login", httpServer.LoginUser)
-	openRouter.GET("/products", httpServer.GetProducts)
-	openRouter.GET("/product/:id", httpServer.GetProduct)
-	openRouter.GET("/providers", httpServer.GetProviders)
-	openRouter.GET("/provider/:id", httpServer.GetProvider)
+	// openRouter := server.router.Group("/")
+	// openRouter.POST("/user/register", httpServer.CreateUser)
+	// openRouter.POST("/user/login", httpServer.LoginUser)
+	// openRouter.GET("/products", httpServer.GetProducts)
+	// openRouter.GET("/product/:id", httpServer.GetProduct)
+	// openRouter.GET("/providers", httpServer.GetProviders)
+	// openRouter.GET("/provider/:id", httpServer.GetProvider)
 
 	// Закрытые маршруты
 	authorized := server.router.Group("/")
@@ -127,7 +133,7 @@ func NewServer() *Server {
 	// Маршруты для super
 	// USER
 	authorized.GET("/users", httpServer.GetUsers)
-	authorized.GET("/user/:id", httpServer.GetUser)
+	// authorized.GET("/user/:id", httpServer.GetUser)
 	authorized.GET("/user/login/:login", httpServer.GetUserByLogin)
 	// PRODUCT
 	authorized.POST("/product", httpServer.CreateProduct)
@@ -141,7 +147,7 @@ func NewServer() *Server {
 	authorized.POST("/order", httpServer.CreateOrder)
 	authorized.GET("/order/:id", httpServer.GetOrder)
 	authorized.GET("/orders", httpServer.GetOrders)
-
+	//############################################################################################
 	return server
 }
 

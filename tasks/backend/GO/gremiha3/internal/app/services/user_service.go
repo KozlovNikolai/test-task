@@ -26,12 +26,12 @@ func (s UserService) GetUserByLogin(ctx context.Context, login string) (domain.U
 	return s.repo.GetUserByLogin(ctx, login)
 }
 
-func (s UserService) CreateUser(ctx context.Context, User domain.User) (domain.User, error) {
-	return s.repo.CreateUser(ctx, User)
+func (s UserService) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
+	return s.repo.CreateUser(ctx, user)
 }
 
-func (s UserService) UpdateUser(ctx context.Context, User domain.User) (domain.User, error) {
-	return s.repo.UpdateUser(ctx, User)
+func (s UserService) UpdateUser(ctx context.Context, user domain.User) (domain.User, error) {
+	return s.repo.UpdateUser(ctx, user)
 }
 
 func (s UserService) DeleteUser(ctx context.Context, id int) error {

@@ -135,8 +135,8 @@ type OrderResponse struct {
 // #######################################################################################3
 // UserRequest is ...
 type UserRequest struct {
-	Login    string `json:"login" db:"login"`
-	Password string `json:"password" db:"password"`
+	Login    string `json:"login" db:"login" example:"cmd@cmd.ru"`
+	Password string `json:"password" db:"password" example:"123456"`
 }
 
 func (u *UserRequest) Validate() error {
@@ -162,3 +162,19 @@ type UserResponse struct {
 	Role     string `json:"role" db:"role"`
 	Token    string `json:"token" db:"token"`
 }
+
+// #############################################################################
+// type AuthRequest struct {
+// 	Login    string `json:"login"`
+// 	Password string `json:"password"`
+// }
+
+// func (r *AuthRequest) Validate() error {
+// 	if r.Login == "" {
+// 		return fmt.Errorf("%w: login", domain.ErrRequired)
+// 	}
+// 	if r.Password == "" {
+// 		return fmt.Errorf("%w: password", domain.ErrRequired)
+// 	}
+// 	return nil
+// }

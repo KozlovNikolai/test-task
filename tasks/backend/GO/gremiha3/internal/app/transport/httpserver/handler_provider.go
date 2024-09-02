@@ -13,11 +13,11 @@ import (
 // CreateProviderTags		godoc
 // @Summary				Добавить поставщика.
 // @Description			Save register data of user in Repo.
-// @Param				Provider body model.AddProvider true "Create Provider"
+// @Param				Provider body ProviderRequest true "Create Provider"
 // @Produce				application/json
 // @Tags				Provider
 // @Security     	BearerAuth
-// @Success				200 {object} model.Provider
+// @Success				200 {object} ProviderResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
 // @Router				/provider [post]
@@ -55,7 +55,7 @@ func (h HttpServer) CreateProvider(c *gin.Context) {
 // @Description		Return Provider with "id" number.
 // @Param			provider_id path int true "Provider ID"
 // @Tags			Provider
-// @Success			200 {object} model.Provider
+// @Success			200 {object} ProviderResponse
 // @failure			404 {string} err.Error()
 // @Router			/provider/{provider_id} [get]
 func (h HttpServer) GetProvider(c *gin.Context) {
@@ -87,7 +87,7 @@ func (h HttpServer) GetProvider(c *gin.Context) {
 // @Description		Return Providers list.
 // @Tags			Provider
 // @Produce      json
-// @Success			200 {object} []model.Provider
+// @Success			200 {object} []ProviderResponse
 // @failure			404 {string} err.Error()
 // @Router			/providers [get]
 func (h HttpServer) GetProviders(c *gin.Context) {

@@ -13,11 +13,11 @@ import (
 // CreateOrderStateTags		godoc
 // @Summary				Добавить тип статуса заказа.
 // @Description			Создание типа статуса заказа.
-// @Param				orderState body model.AddOrderState true "Create Order State type"
+// @Param				orderState body OrderStateRequest true "Create Order State type"
 // @Produce				application/json
 // @Tags				OrderState
 // @Security     	BearerAuth
-// @Success				200 {object} model.OrderState
+// @Success				200 {object} OrderStateResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
 // @Router				/orderstate [post]
@@ -56,7 +56,7 @@ func (h HttpServer) CreateOrderState(c *gin.Context) {
 // @Param			id path int true "OrderState ID"
 // @Tags			OrderState
 // @Security     	BearerAuth
-// @Success			200 {object} model.OrderState
+// @Success			200 {object} OrderStateResponse
 // @failure			404 {string} err.Error()
 // @Router			/orderstate/{id} [get]
 func (h HttpServer) GetOrderState(c *gin.Context) {
@@ -88,7 +88,7 @@ func (h HttpServer) GetOrderState(c *gin.Context) {
 // @Tags			OrderState
 // @Security     	BearerAuth
 // @Produce      json
-// @Success			200 {object} []model.OrderState
+// @Success			200 {object} []OrderStateResponse
 // @failure			404 {string} err.Error()
 // @Router			/orderstates [get]
 func (h HttpServer) GetOrderStates(c *gin.Context) {

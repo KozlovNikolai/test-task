@@ -9,76 +9,63 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CreateUser is ...
-// CreateUserTags		godoc
-// @Summary				Добавить пользователя.
-// @Description			Save register data of user in Repo.
-// @Param				user body model.AddUser true "Create user. Логин указывается в формате электронной почты. Пароль не меньше 6 символов. Роль: super или regular"
-// @Produce				application/json
-// @Tags				Auth
-// @Success				200 {object} model.User
-// @Success				201 {string} string "Пользователь успешно зарегистрирован."
-// @failure				400 {string} err.Error()
-// @failure				500 {string} err.Error()
-// @Router				/user/register [post]
-func (h HttpServer) CreateUser(c *gin.Context) {
-	var userRequest UserRequest
-	if err := c.ShouldBindJSON(&userRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"invalid-json": err.Error()})
-		return
-	}
-
-	if err := userRequest.Validate(); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"invalid-request": err.Error()})
-		return
-	}
-
-	user, err := toDomainUser(userRequest)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error creating domain user": err.Error()})
-		return
-	}
-
-	inserteduser, err := h.userService.CreateUser(c, user)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error DB saving user": err.Error()})
-		return
-	}
-
-	response := toResponseUser(inserteduser)
-	c.JSON(http.StatusCreated, response)
-}
-
 // GetUser is ...
 // GetUserTags 		godoc
 // @Summary			Посмотреть пользователя по его id.
 // @Description		Return user with "id" number.
-// @Param			user_id path int true "User ID"
+// @Param        id  query   string  false  "id of the user"
+// @Param        login  query   string  false  "login of the user"
 // @Tags			User
-// @Security     	BearerAuth
-// @Success			200 {object} model.User
+// @Success			200 {object} UserResponse
 // @failure			404 {string} err.Error()
-// @Router			/user/{user_id} [get]
+// @Router			/user [get]
 func (h HttpServer) GetUser(c *gin.Context) {
-	userID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"invalid-user-id": err.Error()})
-		return
-	}
+	var userRequest UserRequest
+	id_query := c.Query("id")
+	login_query := c.Query("login")
+	//
+	if login_query != "" {
+		userRequest.Login = login_query
+		userRequest.Password = "fake_password"
+		if err := userRequest.Validate(); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"invalid-user-login": err.Error()})
+		}
 
-	user, err := h.userService.GetUserByID(c, userID)
-	if err != nil {
-		if errors.Is(err, domain.ErrNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"user-not-found": err.Error()})
+		domainUser, err := h.userService.GetUserByLogin(c, login_query)
+		if err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{"user-not-found": err.Error()})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		response := toResponseUser(domainUser)
+		c.JSON(http.StatusOK, response)
+		return
+	}
+	//
+	if id_query != "" {
+		userID, err := strconv.Atoi(id_query)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"invalid-user-id": err.Error()})
+			return
+		}
+
+		user, err := h.userService.GetUserByID(c, userID)
+		if err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{"user-not-found": err.Error()})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+			return
+		}
+		response := toResponseUser(user)
+		c.JSON(http.StatusOK, response)
 		return
 	}
 
-	response := toResponseUser(user)
-
-	c.JSON(http.StatusCreated, response)
 }
 
 // GetUserByLogin is ...
@@ -88,7 +75,7 @@ func (h HttpServer) GetUser(c *gin.Context) {
 // @Param			login path string true "Login"
 // @Tags			User
 // @Security     	BearerAuth
-// @Success			200 {object} model.User
+// @Success			200 {object} UserResponse
 // @failure			404 {string} err.Error()
 // @Router			/user/login/{login} [get]
 func (h HttpServer) GetUserByLogin(c *gin.Context) {
@@ -120,50 +107,6 @@ func (h HttpServer) GetUserByLogin(c *gin.Context) {
 	// }
 }
 
-// LoginUser is ...
-// LoginUserTags 		godoc
-// @Summary				Авторизоваться по логину и паролю.
-// @Description			Returns the authorization status
-// @Param				user body model.LoginUser true "Login user. Логин указывается в формате электронной почты. Пароль не меньше 6 символов. Роль: super или regular"
-// @Accept       		json
-// @Produce				json
-// @Tags				Auth
-// @Success      		200 {string} string "Logged in"
-// @failure				400 {string} err.Error()
-// @failure				500 {string} err.Error()
-// @Router				/user/login [post]
-func (h HttpServer) LoginUser(c *gin.Context) {
-	// var loginUser model.LoginUser
-	// if err := c.BindJSON(&loginUser); err != nil {
-	// 	u.logger.Error("Error binding JSON-loginUser", zap.Error(err))
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// // Find login in DB
-	// user, err := u.repoRO.GetUserByLogin(context.TODO(), loginUser.Login)
-	// if err != nil {
-	// 	u.logger.Error("Error. User not find", zap.Error(err))
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	// 	return
-	// }
-	// // Check username and password
-	// err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginUser.Password))
-	// if err != nil {
-	// 	u.logger.Error("Error. Password is wrong", zap.Error(err))
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Error. Password is wrong"})
-	// 	return
-	// }
-	// // Create JWT token
-	// // expirationTime := time.Now().Add(config.Cfg.TokenTimeDuration)
-	// tokenString, err := utils.GenerateJWT(user.ID, user.Login, user.Role)
-	// if err != nil {
-	// 	u.logger.Error("Error. Could not create token", zap.Error(err))
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
-	// }
-	// msg := fmt.Sprintf("Logged in with id: %d, login: %s, role: %s", user.ID, user.Login, user.Role)
-	// c.JSON(http.StatusOK, gin.H{"message": msg, "token": tokenString})
-}
-
 // GetUsers is ...
 // GetUsersTags 		godoc
 // @Summary			Получить список всех пользователей.
@@ -171,7 +114,7 @@ func (h HttpServer) LoginUser(c *gin.Context) {
 // @Tags			User
 // @Security     	BearerAuth
 // @Produce      json
-// @Success			200 {object} []model.User
+// @Success			200 {object} []UserResponse
 // @failure			404 {string} err.Error()
 // @Router			/users [get]
 func (h HttpServer) GetUsers(c *gin.Context) {

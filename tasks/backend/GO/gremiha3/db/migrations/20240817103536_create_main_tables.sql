@@ -1,36 +1,36 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE "products"(
+CREATE TABLE IF NOT EXISTS "products"(
     "id"  serial NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "provider_id" INTEGER NOT NULL,
     "price" FLOAT(53) NOT NULL,
     "stock" INTEGER NOT NULL
 );
-CREATE TABLE "order_states"(
+CREATE TABLE IF NOT EXISTS "order_states"(
     "id"  serial NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL
 );
-CREATE TABLE "users"(
+CREATE TABLE IF NOT EXISTS "users"(
     "id"  serial NOT NULL PRIMARY KEY,
     "login" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" TEXT NOT NULL,
     "token" TEXT NOT NULL
 );
-CREATE TABLE "providers"(
+CREATE TABLE IF NOT EXISTS "providers"(
     "id"  serial NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "origin" TEXT NOT NULL
 );
-CREATE TABLE "items"(
+CREATE TABLE IF NOT EXISTS "items"(
     "id"  serial NOT NULL PRIMARY KEY,
     "product_id" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "total_price" FLOAT(53) NOT NULL,
     "order_id" INTEGER NOT NULL
 );
-CREATE TABLE "orders"(
+CREATE TABLE IF NOT EXISTS "orders"(
     "id"  serial NOT NULL PRIMARY KEY,
     "user_id" INTEGER NOT NULL,
     "state_id" INTEGER NOT NULL,
