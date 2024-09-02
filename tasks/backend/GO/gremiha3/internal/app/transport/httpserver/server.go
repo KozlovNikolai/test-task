@@ -116,25 +116,13 @@ func NewServer() *Server {
 	root.POST("signin", httpServer.SignIn)
 
 	root.GET("user", httpServer.GetUser)
+	root.GET("users", httpServer.GetUsers)
 	//#################################################################################
-	// Открытые маршруты
-	// openRouter := server.router.Group("/")
-	// openRouter.POST("/user/register", httpServer.CreateUser)
-	// openRouter.POST("/user/login", httpServer.LoginUser)
-	// openRouter.GET("/products", httpServer.GetProducts)
-	// openRouter.GET("/product/:id", httpServer.GetProduct)
-	// openRouter.GET("/providers", httpServer.GetProviders)
-	// openRouter.GET("/provider/:id", httpServer.GetProvider)
 
 	// Закрытые маршруты
 	authorized := server.router.Group("/")
 	authorized.Use(middlewares.AuthMiddleware())
 
-	// Маршруты для super
-	// USER
-	authorized.GET("/users", httpServer.GetUsers)
-	// authorized.GET("/user/:id", httpServer.GetUser)
-	authorized.GET("/user/login/:login", httpServer.GetUserByLogin)
 	// PRODUCT
 	authorized.POST("/product", httpServer.CreateProduct)
 	// PROVIDER

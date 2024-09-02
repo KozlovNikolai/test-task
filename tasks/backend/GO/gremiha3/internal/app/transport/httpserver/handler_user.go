@@ -68,69 +68,44 @@ func (h HttpServer) GetUser(c *gin.Context) {
 
 }
 
-// GetUserByLogin is ...
-// GetUserTags 		godoc
-// @Summary			Посмотреть пользователя по его логину.
-// @Description		Return user with "login" value.
-// @Param			login path string true "Login"
-// @Tags			User
-// @Security     	BearerAuth
-// @Success			200 {object} UserResponse
-// @failure			404 {string} err.Error()
-// @Router			/user/login/{login} [get]
-func (h HttpServer) GetUserByLogin(c *gin.Context) {
-	// login := c.Param("login")
-	// authID, authLogin, authRole := utils.GetLevel(c)
-	// u.logger.Debug("принятые логин и роль из токена", zap.Int("id", authID), zap.String("login", authLogin), zap.String("role", authRole))
-	// // если запрос делает суперпользователь, то ему можно всё
-	// if authRole == "super" {
-	// 	user, err := u.repoRO.GetUserByLogin(context.TODO(), login)
-	// 	if err != nil {
-	// 		u.logger.Error("Error getting user", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, user)
-	// } else if authRole == "regular" { // если запрос делает обычный пользователь, то ему можно смотреть только собственные данные
-	// 	user, err := u.repoRO.GetUserByLogin(context.TODO(), authLogin)
-	// 	if err != nil {
-	// 		u.logger.Error("Error getting user", zap.Error(err))
-	// 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-	// 		return
-	// 	}
-	// 	if user.Login != login {
-	// 		u.logger.Error("forbidden access level.")
-	// 		c.JSON(http.StatusForbidden, gin.H{"error": "forbidden access level."})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, user)
-	// }
-}
-
 // GetUsers is ...
 // GetUsersTags 		godoc
 // @Summary			Получить список всех пользователей.
 // @Description		Return users list.
 // @Tags			User
-// @Security     	BearerAuth
+// @Param        limit  query   string  true  "limit records on page"
+// @Param        offset  query   string  true  "start of record output"
 // @Produce      json
 // @Success			200 {object} []UserResponse
 // @failure			404 {string} err.Error()
 // @Router			/users [get]
 func (h HttpServer) GetUsers(c *gin.Context) {
-	limit, err := strconv.Atoi(c.Param("limit"))
+	limit_query := c.Query("limit")
+	offset_query := c.Query("offset")
+
+	limit, err := strconv.Atoi(limit_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-limit": err.Error()})
 		return
 	}
-	offset, err := strconv.Atoi(c.Param("offset"))
+
+	offset, err := strconv.Atoi(offset_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-offset": err.Error()})
 		return
 	}
+	if limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"limit-must-be-greater-then-zero": ""})
+		return
+	}
+	if offset < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"offset-must-be-greater-then-zero": ""})
+		return
+	}
+
 	users, err := h.userService.GetUsers(c, limit, offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error get users": err.Error()})
 		return
 	}
 
@@ -139,5 +114,5 @@ func (h HttpServer) GetUsers(c *gin.Context) {
 		response = append(response, toResponseUser(user))
 	}
 
-	c.JSON(http.StatusCreated, response)
+	c.JSON(http.StatusOK, response)
 }

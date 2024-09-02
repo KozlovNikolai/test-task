@@ -467,32 +467,20 @@ paths:
       summary: Посмотреть пользователя по его id.
       tags:
       - User
-  /user/login/{login}:
-    get:
-      description: Return user with "login" value.
-      parameters:
-      - description: Login
-        in: path
-        name: login
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/httpserver.UserResponse'
-        "404":
-          description: Not Found
-          schema:
-            type: string
-      security:
-      - BearerAuth: []
-      summary: Посмотреть пользователя по его логину.
-      tags:
-      - User
   /users:
     get:
       description: Return users list.
+      parameters:
+      - description: limit records on page
+        in: query
+        name: limit
+        required: true
+        type: string
+      - description: start of record output
+        in: query
+        name: offset
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -506,8 +494,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      security:
-      - BearerAuth: []
       summary: Получить список всех пользователей.
       tags:
       - User

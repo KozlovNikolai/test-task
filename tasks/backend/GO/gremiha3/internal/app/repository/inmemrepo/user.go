@@ -68,7 +68,7 @@ func (repo *UserRepo) GetUsers(_ context.Context, limit int, offset int) ([]doma
 	sort.Ints(keys)
 	// выбираем записи с нужными ключами
 	var users []models.User
-	for i := offset; i < offset+limit && i < len(keys); i++ {
+	for i := offset; i < offset+limit && i <= len(keys); i++ {
 		users = append(users, repo.users[i])
 	}
 

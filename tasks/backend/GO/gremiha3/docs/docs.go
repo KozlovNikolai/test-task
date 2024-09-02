@@ -594,50 +594,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/login/{login}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Return user with \"login\" value.",
-                "tags": [
-                    "User"
-                ],
-                "summary": "Посмотреть пользователя по его логину.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Login",
-                        "name": "login",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.UserResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/users": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Return users list.",
                 "produces": [
                     "application/json"
@@ -646,6 +604,22 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Получить список всех пользователей.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit records on page",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "start of record output",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
