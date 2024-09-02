@@ -98,7 +98,7 @@ func (u *OrderRepo) DeleteOrder(ctx context.Context, id int) error {
 }
 
 // GetOrders implements service.IOrderRepository.
-func (u *OrderRepo) GetOrders(ctx context.Context, limit, offset int) ([]domain.Order, error) {
+func (u *OrderRepo) GetOrders(ctx context.Context, limit, offset, userid int) ([]domain.Order, error) {
 
 	query := `
 		SELECT id,user_id,state_id,total_amount,created_at
@@ -146,7 +146,7 @@ func (u *OrderRepo) GetOrders(ctx context.Context, limit, offset int) ([]domain.
 }
 
 // GetOrderByID implements service.IOrderRepository.
-func (u *OrderRepo) GetOrderByID(ctx context.Context, id int) (domain.Order, error) {
+func (u *OrderRepo) GetOrder(ctx context.Context, id int) (domain.Order, error) {
 	if id == 0 {
 		return domain.Order{}, fmt.Errorf("%w: id", domain.ErrRequired)
 	}

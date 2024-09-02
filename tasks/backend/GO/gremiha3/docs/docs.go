@@ -15,13 +15,171 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/order": {
-            "post": {
-                "security": [
+        "/item": {
+            "get": {
+                "description": "Return item with \"id\" number.",
+                "tags": [
+                    "Item"
+                ],
+                "summary": "Посмотреть запись в заказе по ее id.",
+                "parameters": [
                     {
-                        "BearerAuth": []
+                        "type": "string",
+                        "default": "1",
+                        "example": "1",
+                        "description": "id of the item",
+                        "name": "id",
+                        "in": "query"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.ItemResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add product to order.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Item"
+                ],
+                "summary": "Добавить товар в заказ.",
+                "parameters": [
+                    {
+                        "description": "Create item",
+                        "name": "item",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.ItemRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.ItemResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/items": {
+            "get": {
+                "description": "Return items list by order id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Item"
+                ],
+                "summary": "Получить список товаров в заказе.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "10",
+                        "example": "10",
+                        "description": "limit records on page",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "0",
+                        "example": "0",
+                        "description": "start of record output",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1",
+                        "example": "1",
+                        "description": "filter by order id",
+                        "name": "orderid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/httpserver.ItemResponse"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/order": {
+            "get": {
+                "description": "Return Order with \"id\" number.",
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Посмотреть заказ по его id или по логину пользователя.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "1",
+                        "example": "1",
+                        "description": "id of the order",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.OrderResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
                 "description": "Создание заказа для дальнейшего его заполнения.",
                 "produces": [
                     "application/json"
@@ -42,8 +200,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/httpserver.OrderResponse"
                         }
@@ -63,50 +221,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/order/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Return Order with \"id\" number.",
-                "tags": [
-                    "Order"
-                ],
-                "summary": "Посмотреть товар по его id.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.OrderResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/orders": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "description": "Return Orders list.",
                 "produces": [
                     "application/json"
@@ -115,6 +231,35 @@ const docTemplate = `{
                     "Order"
                 ],
                 "summary": "Получить список всех заказов.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "10",
+                        "example": "10",
+                        "description": "limit records on page",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "0",
+                        "example": "0",
+                        "description": "start of record output",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "1",
+                        "example": "1",
+                        "description": "filter by user id",
+                        "name": "userid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -144,6 +289,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "1",
                         "example": "1",
                         "description": "id of the order state",
                         "name": "id",
@@ -220,6 +366,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "10",
                         "example": "10",
                         "description": "limit records on page",
                         "name": "limit",
@@ -228,7 +375,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "1",
+                        "default": "0",
+                        "example": "0",
                         "description": "start of record output",
                         "name": "offset",
                         "in": "query",
@@ -264,6 +412,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "1",
                         "example": "1",
                         "description": "id of the product",
                         "name": "id",
@@ -340,6 +489,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "10",
                         "example": "10",
                         "description": "limit records on page",
                         "name": "limit",
@@ -348,7 +498,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "1",
+                        "default": "0",
+                        "example": "0",
                         "description": "start of record output",
                         "name": "offset",
                         "in": "query",
@@ -460,6 +611,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "10",
                         "example": "10",
                         "description": "limit records on page",
                         "name": "limit",
@@ -468,7 +620,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "1",
+                        "default": "0",
+                        "example": "0",
                         "description": "start of record output",
                         "name": "offset",
                         "in": "query",
@@ -590,6 +743,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "1",
                         "example": "1",
                         "description": "id of the user",
                         "name": "id",
@@ -597,6 +751,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "cmd@cmd.ru",
                         "example": "cmd@cmd.ru",
                         "description": "login of the user",
                         "name": "login",
@@ -632,6 +787,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "10",
                         "example": "10",
                         "description": "limit records on page",
                         "name": "limit",
@@ -640,7 +796,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "1",
+                        "default": "0",
+                        "example": "0",
                         "description": "start of record output",
                         "name": "offset",
                         "in": "query",
@@ -668,6 +825,43 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "httpserver.ItemRequest": {
+            "type": "object",
+            "properties": {
+                "order_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "product_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
+        "httpserver.ItemResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            }
+        },
         "httpserver.OrderRequest": {
             "type": "object",
             "properties": {

@@ -45,8 +45,8 @@ type IProductService interface {
 // IOrderService is ...
 type IOrderService interface {
 	CreateOrder(context.Context, domain.Order) (domain.Order, error)
-	GetOrders(context.Context, int, int) ([]domain.Order, error)
-	GetOrderByID(context.Context, int) (domain.Order, error)
+	GetOrders(context.Context, int, int, int) ([]domain.Order, error)
+	GetOrder(context.Context, int) (domain.Order, error)
 	GetOrdersByUserID(context.Context, int, int, int) ([]domain.Order, error)
 	UpdateOrder(context.Context, domain.Order) (domain.Order, error)
 	DeleteOrder(context.Context, int) error
@@ -64,9 +64,8 @@ type IOrderStateService interface {
 // IItemService is ...
 type IItemService interface {
 	CreateItem(context.Context, domain.Item) (domain.Item, error)
-	GetItems(context.Context, int, int) ([]domain.Item, error)
-	GetItemByID(context.Context, int) (domain.Item, error)
-	GetItemsByOrderID(context.Context, int) ([]domain.Item, error)
+	GetItems(context.Context, int, int, int) ([]domain.Item, error)
+	GetItem(context.Context, int) (domain.Item, error)
 	UpdateItem(context.Context, domain.Item) (domain.Item, error)
 	DeleteItem(context.Context, int) error
 }

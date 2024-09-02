@@ -16,8 +16,7 @@ import (
 // @Param				order body OrderRequest true "Create Order"
 // @Produce				application/json
 // @Tags				Order
-// @Security     	BearerAuth
-// @Success				200 {object} OrderResponse
+// @Success				201 {object} OrderResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
 // @Router				/order [post]
@@ -51,22 +50,21 @@ func (h HttpServer) CreateOrder(c *gin.Context) {
 
 // GetOrder is ...
 // GetOrderTags 		godoc
-// @Summary			Посмотреть товар по его id.
+// @Summary			Посмотреть заказ по его id или по логину пользователя.
 // @Description		Return Order with "id" number.
-// @Param			id path int true "Order ID"
+// @Param        id  query   string  false  "id of the order" example(1)   default(1)
 // @Tags			Order
-// @Security     	BearerAuth
 // @Success			200 {object} OrderResponse
 // @failure			404 {string} err.Error()
-// @Router			/order/{id} [get]
+// @Router			/order [get]
 func (h HttpServer) GetOrder(c *gin.Context) {
-	orderID, err := strconv.Atoi(c.Param("id"))
+	orderID, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-order-id": err.Error()})
 		return
 	}
 
-	order, err := h.orderService.GetOrderByID(c, orderID)
+	order, err := h.orderService.GetOrder(c, orderID)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"order-not-found": err.Error()})
@@ -86,25 +84,50 @@ func (h HttpServer) GetOrder(c *gin.Context) {
 // @Summary			Получить список всех заказов.
 // @Description		Return Orders list.
 // @Tags			Order
-// @Security     	BearerAuth
+// @Param        limit  query   string  true  "limit records on page" example(10)  default(10)
+// @Param        offset  query   string  true  "start of record output" example(0) default(0)
+// @Param        userid  query   string  true  "filter by user id" example(1) default(1)
 // @Produce      json
 // @Success			200 {object} []OrderResponse
 // @failure			404 {string} err.Error()
 // @Router			/orders [get]
 func (h HttpServer) GetOrders(c *gin.Context) {
-	limit, err := strconv.Atoi(c.Param("limit"))
+	limit_query := c.Query("limit")
+	offset_query := c.Query("offset")
+	userid_query := c.Query("userid")
+
+	limit, err := strconv.Atoi(limit_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-limit": err.Error()})
 		return
 	}
-	offset, err := strconv.Atoi(c.Param("offset"))
+	offset, err := strconv.Atoi(offset_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-offset": err.Error()})
 		return
 	}
-	orders, err := h.orderService.GetOrders(c, limit, offset)
+	userid, err := strconv.Atoi(userid_query)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"invalid-userid": err.Error()})
+		return
+	}
+
+	if limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"limit-must-be-greater-then-zero": ""})
+		return
+	}
+	if offset < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"offset-must-be-equal-or-greater-then-zero": ""})
+		return
+	}
+	if userid < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"userid-must-be-greater-then-zero": ""})
+		return
+	}
+
+	orders, err := h.orderService.GetOrders(c, limit, offset, userid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error get orders": err.Error()})
 		return
 	}
 
@@ -113,5 +136,5 @@ func (h HttpServer) GetOrders(c *gin.Context) {
 		response = append(response, toResponseOrder(order))
 	}
 
-	c.JSON(http.StatusCreated, response)
+	c.JSON(http.StatusOK, response)
 }

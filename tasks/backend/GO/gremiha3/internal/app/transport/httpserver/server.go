@@ -59,12 +59,13 @@ func NewServer() *Server {
 		orderRepo = pgrepo.NewOrderRepo(pgDB)
 
 	case "inmemory":
-		providerRepo = inmemrepo.NewProviderRepo()
-		productRepo = inmemrepo.NewProductRepo()
-		orderStateRepo = inmemrepo.NewOrderStateRepo()
-		itemRepo = inmemrepo.NewItemRepo()
-		userRepo = inmemrepo.NewUserRepo()
-		orderRepo = inmemrepo.NewOrderRepo()
+		imDB := inmemrepo.NewInMemRepo()
+		providerRepo = inmemrepo.NewProviderRepo(imDB)
+		productRepo = inmemrepo.NewProductRepo(imDB)
+		orderStateRepo = inmemrepo.NewOrderStateRepo(imDB)
+		itemRepo = inmemrepo.NewItemRepo(imDB)
+		userRepo = inmemrepo.NewUserRepo(imDB)
+		orderRepo = inmemrepo.NewOrderRepo(imDB)
 
 	default:
 		logger.Fatal("Invalid repository type")
@@ -129,17 +130,20 @@ func NewServer() *Server {
 	root.POST("orderstate", httpServer.CreateOrderState)
 	root.GET("orderstate", httpServer.GetOrderState)
 	root.GET("orderstates", httpServer.GetOrderStates)
+
+	root.POST("order", httpServer.CreateOrder)
+	root.GET("order", httpServer.GetOrder)
+	root.GET("orders", httpServer.GetOrders)
+
+	root.POST("item", httpServer.CreateItem)
+	root.GET("item", httpServer.GetItem)
+	root.GET("items", httpServer.GetItems)
 	//#################################################################################
 
 	// Закрытые маршруты
 	authorized := server.router.Group("/")
 	authorized.Use(middlewares.AuthMiddleware())
 
-	// ORDER
-	authorized.POST("/order", httpServer.CreateOrder)
-	authorized.GET("/order/:id", httpServer.GetOrder)
-	authorized.GET("/orders", httpServer.GetOrders)
-	//############################################################################################
 	return server
 }
 

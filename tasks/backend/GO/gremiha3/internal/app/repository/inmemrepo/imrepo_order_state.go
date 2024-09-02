@@ -11,19 +11,13 @@ import (
 )
 
 type OrderStateRepo struct {
-	orderStates       map[int]models.OrderState
-	nextOrderStatesID int
-	mutex             sync.RWMutex
+	db    *inMemStore
+	mutex sync.RWMutex
 }
 
-func NewOrderStateRepo() *OrderStateRepo {
+func NewOrderStateRepo(db *inMemStore) *OrderStateRepo {
 	return &OrderStateRepo{
-		orderStates: map[int]models.OrderState{
-			1: {ID: 1, Name: "Created"},
-			2: {ID: 2, Name: "In progress"},
-			3: {ID: 3, Name: "Delivery"},
-		},
-		nextOrderStatesID: 4,
+		db: db,
 	}
 }
 
@@ -34,12 +28,12 @@ func (repo *OrderStateRepo) CreateOrderState(_ context.Context, orderState domai
 	defer repo.mutex.Unlock()
 	// мапим домен в модель
 	dbOrderState := domainToOrderState(orderState)
-	dbOrderState.ID = repo.nextOrderStatesID
+	dbOrderState.ID = repo.db.nextOrderStatesID
 
 	// инкрементируем счетчик записей
-	repo.nextOrderStatesID++
+	repo.db.nextOrderStatesID++
 	// сохраняем
-	repo.orderStates[dbOrderState.ID] = dbOrderState
+	repo.db.orderStates[dbOrderState.ID] = dbOrderState
 	// мапим модель в домен
 	domainOrderState, err := orderStateToDomain(dbOrderState)
 	if err != nil {
@@ -55,11 +49,11 @@ func (repo *OrderStateRepo) DeleteOrderState(_ context.Context, id int) error {
 	}
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-	_, exists := repo.orderStates[id]
+	_, exists := repo.db.orderStates[id]
 	if !exists {
 		return fmt.Errorf("OrderState with id %d - %w", id, domain.ErrNotFound)
 	}
-	delete(repo.orderStates, id)
+	delete(repo.db.orderStates, id)
 	return nil
 }
 
@@ -67,7 +61,7 @@ func (repo *OrderStateRepo) DeleteOrderState(_ context.Context, id int) error {
 func (repo *OrderStateRepo) GetOrderState(_ context.Context, id int) (domain.OrderState, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-	orderState, exists := repo.orderStates[id]
+	orderState, exists := repo.db.orderStates[id]
 	if !exists {
 		return domain.OrderState{}, fmt.Errorf("OrderState with id %d - %w", id, domain.ErrNotFound)
 	}
@@ -83,15 +77,15 @@ func (repo *OrderStateRepo) GetOrderStates(_ context.Context, limit int, offset 
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	// извлекаем все ключи из мапы и сортируем их
-	keys := make([]int, 0, len(repo.orderStates))
-	for k := range repo.orderStates {
+	keys := make([]int, 0, len(repo.db.orderStates))
+	for k := range repo.db.orderStates {
 		keys = append(keys, k)
 	}
 	sort.Ints(keys)
 	// выбираем записи с нужными ключами
 	var orderStates []models.OrderState
-	for i := offset; i < offset+limit && i <= len(keys); i++ {
-		orderStates = append(orderStates, repo.orderStates[i])
+	for i := offset; i < offset+limit && i < len(keys); i++ {
+		orderStates = append(orderStates, repo.db.orderStates[keys[i]])
 	}
 
 	// мапим массив моделей в массив доменов
@@ -112,12 +106,12 @@ func (repo *OrderStateRepo) UpdateOrderState(_ context.Context, orderState domai
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	// проверяем наличие записи
-	_, exists := repo.orderStates[dbOrderState.ID]
+	_, exists := repo.db.orderStates[dbOrderState.ID]
 	if !exists {
 		return domain.OrderState{}, fmt.Errorf("OrderState with id %d - %w", dbOrderState.ID, domain.ErrNotFound)
 	}
 	// обновляем запись
-	repo.orderStates[dbOrderState.ID] = dbOrderState
+	repo.db.orderStates[dbOrderState.ID] = dbOrderState
 	domainOrderState, err := orderStateToDomain(dbOrderState)
 	if err != nil {
 		return domain.OrderState{}, fmt.Errorf("failed to create domain OrderState: %w", err)

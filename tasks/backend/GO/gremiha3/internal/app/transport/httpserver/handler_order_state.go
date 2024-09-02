@@ -52,7 +52,7 @@ func (h HttpServer) CreateOrderState(c *gin.Context) {
 // GetOrderStateTags 		godoc
 // @Summary			Посмотреть тип статуса по его id.
 // @Description		Return OrderState with "id" number.
-// @Param        id  query   string  false  "id of the order state" example(1)
+// @Param        id  query   string  false  "id of the order state" example(1) default(1)
 // @Tags			OrderState
 // @Success			200 {object} OrderStateResponse
 // @failure			404 {string} err.Error()
@@ -84,8 +84,8 @@ func (h HttpServer) GetOrderState(c *gin.Context) {
 // @Summary			Получить список всех статусов.
 // @Description		Return OrderStates list.
 // @Tags			OrderState
-// @Param        limit  query   string  true  "limit records on page" example(10)
-// @Param        offset  query   string  true  "start of record output" example(1)
+// @Param        limit  query   string  true  "limit records on page" example(10) default(10)
+// @Param        offset  query   string  true  "start of record output" example(0) default(0)
 // @Produce      json
 // @Success			200 {object} []OrderStateResponse
 // @failure			404 {string} err.Error()
@@ -109,7 +109,7 @@ func (h HttpServer) GetOrderStates(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"limit-must-be-greater-then-zero": ""})
 		return
 	}
-	if offset < 1 {
+	if offset < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"offset-must-be-greater-then-zero": ""})
 		return
 	}

@@ -1,4 +1,29 @@
 definitions:
+  httpserver.ItemRequest:
+    properties:
+      order_id:
+        example: 1
+        type: integer
+      product_id:
+        example: 1
+        type: integer
+      quantity:
+        example: 3
+        type: integer
+    type: object
+  httpserver.ItemResponse:
+    properties:
+      id:
+        type: integer
+      order_id:
+        type: integer
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+      total_price:
+        type: number
+    type: object
   httpserver.OrderRequest:
     properties:
       user_id:
@@ -105,7 +130,118 @@ info:
   title: Shop Service API
   version: "1.0"
 paths:
+  /item:
+    get:
+      description: Return item with "id" number.
+      parameters:
+      - default: "1"
+        description: id of the item
+        example: "1"
+        in: query
+        name: id
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpserver.ItemResponse'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Посмотреть запись в заказе по ее id.
+      tags:
+      - Item
+    post:
+      description: Add product to order.
+      parameters:
+      - description: Create item
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/httpserver.ItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpserver.ItemResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Добавить товар в заказ.
+      tags:
+      - Item
+  /items:
+    get:
+      description: Return items list by order id.
+      parameters:
+      - default: "10"
+        description: limit records on page
+        example: "10"
+        in: query
+        name: limit
+        required: true
+        type: string
+      - default: "0"
+        description: start of record output
+        example: "0"
+        in: query
+        name: offset
+        required: true
+        type: string
+      - default: "1"
+        description: filter by order id
+        example: "1"
+        in: query
+        name: orderid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/httpserver.ItemResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Получить список товаров в заказе.
+      tags:
+      - Item
   /order:
+    get:
+      description: Return Order with "id" number.
+      parameters:
+      - default: "1"
+        description: id of the order
+        example: "1"
+        in: query
+        name: id
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpserver.OrderResponse'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Посмотреть заказ по его id или по логину пользователя.
+      tags:
+      - Order
     post:
       description: Создание заказа для дальнейшего его заполнения.
       parameters:
@@ -118,8 +254,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/httpserver.OrderResponse'
         "400":
@@ -130,37 +266,34 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      security:
-      - BearerAuth: []
       summary: Добавить заказ.
-      tags:
-      - Order
-  /order/{id}:
-    get:
-      description: Return Order with "id" number.
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/httpserver.OrderResponse'
-        "404":
-          description: Not Found
-          schema:
-            type: string
-      security:
-      - BearerAuth: []
-      summary: Посмотреть товар по его id.
       tags:
       - Order
   /orders:
     get:
       description: Return Orders list.
+      parameters:
+      - default: "10"
+        description: limit records on page
+        example: "10"
+        in: query
+        name: limit
+        required: true
+        type: string
+      - default: "0"
+        description: start of record output
+        example: "0"
+        in: query
+        name: offset
+        required: true
+        type: string
+      - default: "1"
+        description: filter by user id
+        example: "1"
+        in: query
+        name: userid
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -174,8 +307,6 @@ paths:
           description: Not Found
           schema:
             type: string
-      security:
-      - BearerAuth: []
       summary: Получить список всех заказов.
       tags:
       - Order
@@ -183,7 +314,8 @@ paths:
     get:
       description: Return OrderState with "id" number.
       parameters:
-      - description: id of the order state
+      - default: "1"
+        description: id of the order state
         example: "1"
         in: query
         name: id
@@ -231,14 +363,16 @@ paths:
     get:
       description: Return OrderStates list.
       parameters:
-      - description: limit records on page
+      - default: "10"
+        description: limit records on page
         example: "10"
         in: query
         name: limit
         required: true
         type: string
-      - description: start of record output
-        example: "1"
+      - default: "0"
+        description: start of record output
+        example: "0"
         in: query
         name: offset
         required: true
@@ -263,7 +397,8 @@ paths:
     get:
       description: Return product with "id" number.
       parameters:
-      - description: id of the product
+      - default: "1"
+        description: id of the product
         example: "1"
         in: query
         name: id
@@ -311,14 +446,16 @@ paths:
     get:
       description: Return products list.
       parameters:
-      - description: limit records on page
+      - default: "10"
+        description: limit records on page
         example: "10"
         in: query
         name: limit
         required: true
         type: string
-      - description: start of record output
-        example: "1"
+      - default: "0"
+        description: start of record output
+        example: "0"
         in: query
         name: offset
         required: true
@@ -391,14 +528,16 @@ paths:
     get:
       description: Return Providers list.
       parameters:
-      - description: limit records on page
+      - default: "10"
+        description: limit records on page
         example: "10"
         in: query
         name: limit
         required: true
         type: string
-      - description: start of record output
-        example: "1"
+      - default: "0"
+        description: start of record output
+        example: "0"
         in: query
         name: offset
         required: true
@@ -481,12 +620,14 @@ paths:
     get:
       description: Получить пользователя по его id ли логину.
       parameters:
-      - description: id of the user
+      - default: "1"
+        description: id of the user
         example: "1"
         in: query
         name: id
         type: string
-      - description: login of the user
+      - default: cmd@cmd.ru
+        description: login of the user
         example: cmd@cmd.ru
         in: query
         name: login
@@ -507,14 +648,16 @@ paths:
     get:
       description: Return users list.
       parameters:
-      - description: limit records on page
+      - default: "10"
+        description: limit records on page
         example: "10"
         in: query
         name: limit
         required: true
         type: string
-      - description: start of record output
-        example: "1"
+      - default: "0"
+        description: start of record output
+        example: "0"
         in: query
         name: offset
         required: true

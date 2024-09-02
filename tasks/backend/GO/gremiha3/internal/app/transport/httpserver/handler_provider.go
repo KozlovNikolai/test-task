@@ -81,16 +81,16 @@ func (h HttpServer) GetProvider(c *gin.Context) {
 }
 
 // GetProviders is ...
-// GetProvidersTags 		godoc
-// @Summary			Получить список всех поставщиков.
-// @Description		Return Providers list.
-// @Tags			Provider
-// @Param        limit  query   string  true  "limit records on page" example(10)
-// @Param        offset  query   string  true  "start of record output" example(1)
-// @Produce      json
-// @Success			200 {object} []ProviderResponse
-// @failure			404 {string} err.Error()
-// @Router			/providers [get]
+// GetProvidersTags 	godoc
+// @Summary				Получить список всех поставщиков.
+// @Description			Return Providers list.
+// @Tags				Provider
+// @Param        		limit  query   string  true  "limit records on page"  example(10)  default(10)
+// @Param        		offset  query   string  true  "start of record output"  example(0)  default(0)
+// @Produce      		json
+// @Success				200 {object} []ProviderResponse
+// @failure				404 {string} err.Error()
+// @Router				/providers [get]
 func (h HttpServer) GetProviders(c *gin.Context) {
 	limit_query := c.Query("limit")
 	offset_query := c.Query("offset")
@@ -110,7 +110,7 @@ func (h HttpServer) GetProviders(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"limit-must-be-greater-then-zero": ""})
 		return
 	}
-	if offset < 1 {
+	if offset < 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"offset-must-be-greater-then-zero": ""})
 		return
 	}

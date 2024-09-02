@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/KozlovNikolai/test-task/internal/app/domain"
 )
@@ -27,7 +28,20 @@ func (s UserService) GetUserByLogin(ctx context.Context, login string) (domain.U
 }
 
 func (s UserService) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
-	return s.repo.CreateUser(ctx, user)
+	creatingTime := time.Now()
+	var newUser = domain.NewUserData{
+		Login:     user.Login(),
+		Password:  user.Password(),
+		Role:      "regular",
+		Token:     "",
+		CreatedAt: creatingTime,
+		UpdatedAt: creatingTime,
+	}
+	creatingUser, err := domain.NewUser(newUser)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return s.repo.CreateUser(ctx, creatingUser)
 }
 
 func (s UserService) UpdateUser(ctx context.Context, user domain.User) (domain.User, error) {

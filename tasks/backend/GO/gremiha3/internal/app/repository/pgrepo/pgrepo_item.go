@@ -89,7 +89,7 @@ func (i *ItemRepo) DeleteItem(ctx context.Context, id int) error {
 }
 
 // GetItems implements service.IItemRepository.
-func (i *ItemRepo) GetItems(ctx context.Context, limit, offset int) ([]domain.Item, error) {
+func (i *ItemRepo) GetItems(ctx context.Context, limit, offset, orderid int) ([]domain.Item, error) {
 
 	query := `
 		SELECT id,product_id,quantity,total_price,order_id
@@ -137,7 +137,7 @@ func (i *ItemRepo) GetItems(ctx context.Context, limit, offset int) ([]domain.It
 }
 
 // GetItemByID implements service.IItemRepository.
-func (i *ItemRepo) GetItemByID(ctx context.Context, id int) (domain.Item, error) {
+func (i *ItemRepo) GetItem(ctx context.Context, id int) (domain.Item, error) {
 	if id == 0 {
 		return domain.Item{}, fmt.Errorf("%w: id", domain.ErrRequired)
 	}
@@ -165,55 +165,6 @@ func (i *ItemRepo) GetItemByID(ctx context.Context, id int) (domain.Item, error)
 	}
 
 	return domainItem, nil
-}
-
-// GetItemByOrderID implements service.IItemRepository.
-func (i *ItemRepo) GetItemsByOrderID(ctx context.Context, orderID int) ([]domain.Item, error) {
-	if orderID == 0 {
-		return nil, fmt.Errorf("%w: orderID", domain.ErrRequired)
-	}
-	// SQL-запрос на получение заказов Пользователя по логину
-	query := `
-		SELECT  id,product_id,quantity,total_price,order_id
-		FROM items
-		WHERE order_id = $1
-		ORDER BY id
-	`
-	rows, err := i.db.RO.Query(ctx, query, orderID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute query: %w", err)
-	}
-	defer rows.Close()
-	// Заполняем массив пользователей
-	var items []models.Item
-	for rows.Next() {
-		var item models.Item
-		err := rows.Scan(
-			&item.ID,
-			&item.ProductID,
-			&item.Quantity,
-			&item.TotalPrice,
-			&item.OrderID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan row: %w", err)
-		}
-		items = append(items, item)
-	}
-
-	// Проверка на ошибки, возникшие при итерации по строкам
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("error occurred during row iteration: %w", rows.Err())
-	}
-	// мапим модель в домен
-	domainItems := make([]domain.Item, len(items))
-	for i, item := range items {
-		domainItem, err := itemToDomain(item)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create domain item: %w", err)
-		}
-		domainItems[i] = domainItem
-	}
-	return domainItems, nil
 }
 
 // UpdateItem implements service.IItemRepository.

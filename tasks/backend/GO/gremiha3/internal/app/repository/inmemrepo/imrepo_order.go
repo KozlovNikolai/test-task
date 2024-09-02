@@ -11,15 +11,13 @@ import (
 )
 
 type OrderRepo struct {
-	orders       map[int]models.Order
-	nextOrdersID int
-	mutex        sync.RWMutex
+	db    *inMemStore
+	mutex sync.RWMutex
 }
 
-func NewOrderRepo() *OrderRepo {
+func NewOrderRepo(db *inMemStore) *OrderRepo {
 	return &OrderRepo{
-		orders:       make(map[int]models.Order),
-		nextOrdersID: 1,
+		db: db,
 	}
 }
 
@@ -28,14 +26,23 @@ func (repo *OrderRepo) CreateOrder(_ context.Context, order domain.Order) (domai
 
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
+
+	// проверяем, существует ли пользователь
+	if _, exists := repo.db.users[order.UserID()]; !exists {
+		return domain.Order{}, fmt.Errorf("user with id %d does not exist", order.UserID())
+	}
+	// проверяем, существует ли статус
+	if _, exists := repo.db.orderStates[order.StateID()]; !exists {
+		return domain.Order{}, fmt.Errorf("order state with id %d does not exist", order.StateID())
+	}
 	// мапим домен в модель
 	dbOrder := domainToOrder(order)
-	dbOrder.ID = repo.nextOrdersID
+	dbOrder.ID = repo.db.nextOrdersID
 
 	// инкрементируем счетчик записей
-	repo.nextOrdersID++
+	repo.db.nextOrdersID++
 	// сохраняем
-	repo.orders[dbOrder.ID] = dbOrder
+	repo.db.orders[dbOrder.ID] = dbOrder
 	// мапим модель в домен
 	domainOrder, err := orderToDomain(dbOrder)
 	if err != nil {
@@ -45,19 +52,28 @@ func (repo *OrderRepo) CreateOrder(_ context.Context, order domain.Order) (domai
 }
 
 // GetOrders implements services.IOrderRepository.
-func (repo *OrderRepo) GetOrders(_ context.Context, limit int, offset int) ([]domain.Order, error) {
+func (repo *OrderRepo) GetOrders(_ context.Context, limit, offset, userid int) ([]domain.Order, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	// извлекаем все ключи из мапы и сортируем их
-	keys := make([]int, 0, len(repo.orders))
-	for k := range repo.orders {
+	keys := make([]int, 0, len(repo.db.orders))
+	for k := range repo.db.orders {
 		keys = append(keys, k)
 	}
 	sort.Ints(keys)
+	// выбираем все заказы выбранного пользователя
+	var ordersByUserID []models.Order
+	for i := 0; i < len(keys); i++ {
+		order := repo.db.orders[keys[i]]
+		if order.UserID == userid {
+			ordersByUserID = append(ordersByUserID, order)
+		}
+	}
+
 	// выбираем записи с нужными ключами
 	var orders []models.Order
-	for i := offset; i < offset+limit && i < len(keys); i++ {
-		orders = append(orders, repo.orders[i])
+	for i := offset; i < offset+limit && i < len(ordersByUserID); i++ {
+		orders = append(orders, ordersByUserID[i])
 	}
 
 	// мапим массив моделей в массив доменов
@@ -73,10 +89,10 @@ func (repo *OrderRepo) GetOrders(_ context.Context, limit int, offset int) ([]do
 }
 
 // GetOrderByID implements services.IOrderRepository.
-func (repo *OrderRepo) GetOrderByID(_ context.Context, id int) (domain.Order, error) {
+func (repo *OrderRepo) GetOrder(_ context.Context, id int) (domain.Order, error) {
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-	order, exists := repo.orders[id]
+	order, exists := repo.db.orders[id]
 	if !exists {
 		return domain.Order{}, fmt.Errorf("order with id %d - %w", id, domain.ErrNotFound)
 	}
@@ -93,7 +109,7 @@ func (repo *OrderRepo) GetOrdersByUserID(_ context.Context, userID int, limit in
 	defer repo.mutex.Unlock()
 
 	var orders []models.Order
-	for _, order := range repo.orders {
+	for _, order := range repo.db.orders {
 		if order.UserID == userID {
 			orders = append(orders, order)
 		}
@@ -128,12 +144,12 @@ func (repo *OrderRepo) UpdateOrder(_ context.Context, order domain.Order) (domai
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
 	// проверяем наличие записи
-	_, exists := repo.orders[dbOrder.ID]
+	_, exists := repo.db.orders[dbOrder.ID]
 	if !exists {
 		return domain.Order{}, fmt.Errorf("order with id %d - %w", dbOrder.ID, domain.ErrNotFound)
 	}
 	// обновляем запись
-	repo.orders[dbOrder.ID] = dbOrder
+	repo.db.orders[dbOrder.ID] = dbOrder
 	domainOrder, err := orderToDomain(dbOrder)
 	if err != nil {
 		return domain.Order{}, fmt.Errorf("failed to create domain Order: %w", err)
@@ -148,10 +164,10 @@ func (repo *OrderRepo) DeleteOrder(_ context.Context, id int) error {
 	}
 	repo.mutex.Lock()
 	defer repo.mutex.Unlock()
-	_, exists := repo.orders[id]
+	_, exists := repo.db.orders[id]
 	if !exists {
 		return fmt.Errorf("order with id %d - %w", id, domain.ErrNotFound)
 	}
-	delete(repo.orders, id)
+	delete(repo.db.orders, id)
 	return nil
 }

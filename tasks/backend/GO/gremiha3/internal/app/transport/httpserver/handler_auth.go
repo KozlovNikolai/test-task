@@ -19,7 +19,6 @@ import (
 // @failure				500 {string} string "error-to-create-domain-user"
 // @Router				/signup [post]
 func (h HttpServer) SignUp(c *gin.Context) {
-	log.Println("######## SIGN UP #########")
 	var userRequest UserRequest
 	var err error
 	if err = c.ShouldBindJSON(&userRequest); err != nil {
