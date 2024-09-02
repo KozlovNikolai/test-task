@@ -11,8 +11,8 @@ import (
 
 // GetUser is ...
 // GetUserTags 		godoc
-// @Summary			Посмотреть пользователя по его id.
-// @Description		Return user with "id" number.
+// @Summary			Посмотреть пользователя по его id или логину.
+// @Description		Получить пользователя по его id ли логину.
 // @Param        id  query   string  false  "id of the user"
 // @Param        login  query   string  false  "login of the user"
 // @Tags			User

@@ -363,12 +363,36 @@ const docTemplate = `{
             }
         },
         "/provider": {
-            "post": {
-                "security": [
+            "get": {
+                "description": "Return Provider with \"id\" number.",
+                "tags": [
+                    "Provider"
+                ],
+                "summary": "Посмотреть постащика по его id.",
+                "parameters": [
                     {
-                        "BearerAuth": []
+                        "type": "string",
+                        "description": "id of the provider",
+                        "name": "id",
+                        "in": "query"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.ProviderResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
                 "description": "Save register data of user in Repo.",
                 "produces": [
                     "application/json"
@@ -410,38 +434,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/provider/{provider_id}": {
-            "get": {
-                "description": "Return Provider with \"id\" number.",
-                "tags": [
-                    "Provider"
-                ],
-                "summary": "Посмотреть постащика по его id.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Provider ID",
-                        "name": "provider_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.ProviderResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/providers": {
             "get": {
                 "description": "Return Providers list.",
@@ -452,6 +444,22 @@ const docTemplate = `{
                     "Provider"
                 ],
                 "summary": "Получить список всех поставщиков.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "limit records on page",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "start of record output",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -559,11 +567,11 @@ const docTemplate = `{
         },
         "/user": {
             "get": {
-                "description": "Return user with \"id\" number.",
+                "description": "Получить пользователя по его id ли логину.",
                 "tags": [
                     "User"
                 ],
-                "summary": "Посмотреть пользователя по его id.",
+                "summary": "Посмотреть пользователя по его id или логину.",
                 "parameters": [
                     {
                         "type": "string",
@@ -645,7 +653,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "user_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -673,7 +682,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "в обработке"
                 }
             }
         },
@@ -692,16 +702,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "синхрофазотрон"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1245.65
                 },
                 "provider_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "stock": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 435
                 }
             }
         },
@@ -729,10 +743,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Microsoft"
                 },
                 "origin": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Vietnam"
                 }
             }
         },

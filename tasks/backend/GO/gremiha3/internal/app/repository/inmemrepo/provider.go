@@ -85,7 +85,7 @@ func (repo *ProviderRepo) GetProviders(_ context.Context, limit int, offset int)
 	sort.Ints(keys)
 	// выбираем записи с нужными ключами
 	var providers []models.Provider
-	for i := offset; i < offset+limit && i < len(keys); i++ {
+	for i := offset; i < offset+limit && i <= len(keys); i++ {
 		providers = append(providers, repo.providers[i])
 	}
 
@@ -94,7 +94,7 @@ func (repo *ProviderRepo) GetProviders(_ context.Context, limit int, offset int)
 	for i, provider := range providers {
 		domainProvider, err := providerToDomain(provider)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create domain provider: %w", err)
+			return nil, fmt.Errorf("failed to create domain User: %w", err)
 		}
 		domainProviders[i] = domainProvider
 	}

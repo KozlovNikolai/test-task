@@ -117,6 +117,14 @@ func NewServer() *Server {
 
 	root.GET("user", httpServer.GetUser)
 	root.GET("users", httpServer.GetUsers)
+
+	root.POST("provider", httpServer.CreateProvider)
+	root.GET("provider", httpServer.GetProvider)
+	root.GET("providers", httpServer.GetProviders)
+
+	root.POST("product", httpServer.CreateProduct)
+	root.GET("product", httpServer.GetProduct)
+	root.GET("products", httpServer.GetProducts)
 	//#################################################################################
 
 	// Закрытые маршруты
@@ -124,9 +132,9 @@ func NewServer() *Server {
 	authorized.Use(middlewares.AuthMiddleware())
 
 	// PRODUCT
-	authorized.POST("/product", httpServer.CreateProduct)
+	// authorized.POST("/product", httpServer.CreateProduct)
 	// PROVIDER
-	authorized.POST("/provider", httpServer.CreateProvider)
+	// authorized.POST("/provider", httpServer.CreateProvider)
 	// ORDERSTATE
 	authorized.POST("/orderstate", httpServer.CreateOrderState)
 	authorized.GET("/orderstate/:id", httpServer.GetOrderState)

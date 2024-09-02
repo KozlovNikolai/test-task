@@ -11,8 +11,8 @@ const passwordLength = 6
 
 // ProviderRequest is ...
 type ProviderRequest struct {
-	Name   string `json:"name" db:"name"`
-	Origin string `json:"origin" db:"origin"`
+	Name   string `json:"name" db:"name" example:"Microsoft"`
+	Origin string `json:"origin" db:"origin" example:"Vietnam"`
 }
 
 func (p *ProviderRequest) Validate() error {
@@ -34,10 +34,10 @@ type ProviderResponse struct {
 // #######################################################################################3
 // ProductRequest is ...
 type ProductRequest struct {
-	Name       string  `json:"name" db:"name"`
-	ProviderID int     `json:"provider_id" db:"provider_id"`
-	Price      float64 `json:"price" db:"price"`
-	Stock      int     `json:"stock" db:"stock"`
+	Name       string  `json:"name" db:"name" example:"синхрофазотрон"`
+	ProviderID int     `json:"provider_id" db:"provider_id" example:"1"`
+	Price      float64 `json:"price" db:"price" example:"1245.65"`
+	Stock      int     `json:"stock" db:"stock" example:"435"`
 }
 
 func (p *ProductRequest) Validate() error {
@@ -67,7 +67,7 @@ type ProductResponse struct {
 // #######################################################################################
 // OrderStateRequest is ...
 type OrderStateRequest struct {
-	Name string `json:"name" db:"name"`
+	Name string `json:"name" db:"name" example:"в обработке"`
 }
 
 func (o *OrderStateRequest) Validate() error {
@@ -85,9 +85,9 @@ type OrderStateResponse struct {
 // #######################################################################################3
 // ItemRequest is ...
 type ItemRequest struct {
-	ProductID int `json:"product_id" db:"product_id"`
-	Quantity  int `json:"quantity" db:"quantity"`
-	OrderID   int `json:"order_id" db:"order_id"`
+	ProductID int `json:"product_id" db:"product_id" example:"1"`
+	Quantity  int `json:"quantity" db:"quantity" example:"3"`
+	OrderID   int `json:"order_id" db:"order_id" example:"1"`
 }
 
 func (i *ItemRequest) Validate() error {
@@ -114,7 +114,7 @@ type ItemResponse struct {
 // #######################################################################################3
 // OrderRequest is ...
 type OrderRequest struct {
-	UserID int `json:"user_id" db:"user_id"`
+	UserID int `json:"user_id" db:"user_id" example:"1"`
 }
 
 func (o *OrderRequest) Validate() error {
@@ -162,19 +162,3 @@ type UserResponse struct {
 	Role     string `json:"role" db:"role"`
 	Token    string `json:"token" db:"token"`
 }
-
-// #############################################################################
-// type AuthRequest struct {
-// 	Login    string `json:"login"`
-// 	Password string `json:"password"`
-// }
-
-// func (r *AuthRequest) Validate() error {
-// 	if r.Login == "" {
-// 		return fmt.Errorf("%w: login", domain.ErrRequired)
-// 	}
-// 	if r.Password == "" {
-// 		return fmt.Errorf("%w: password", domain.ErrRequired)
-// 	}
-// 	return nil
-// }

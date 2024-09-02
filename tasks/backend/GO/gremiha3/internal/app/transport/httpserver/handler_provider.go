@@ -16,7 +16,6 @@ import (
 // @Param				Provider body ProviderRequest true "Create Provider"
 // @Produce				application/json
 // @Tags				Provider
-// @Security     	BearerAuth
 // @Success				200 {object} ProviderResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
@@ -53,14 +52,14 @@ func (h HttpServer) CreateProvider(c *gin.Context) {
 // GetProviderTags 		godoc
 // @Summary			Посмотреть постащика по его id.
 // @Description		Return Provider with "id" number.
-// @Param			provider_id path int true "Provider ID"
+// @Param        id  query   string  false  "id of the provider"
 // @Tags			Provider
 // @Success			200 {object} ProviderResponse
 // @failure			404 {string} err.Error()
-// @Router			/provider/{provider_id} [get]
+// @Router			/provider [get]
 func (h HttpServer) GetProvider(c *gin.Context) {
 
-	providerID, err := strconv.Atoi(c.Param("id"))
+	providerID, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-provider-id": err.Error()})
 		return
@@ -72,7 +71,7 @@ func (h HttpServer) GetProvider(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{"provider-not-found": err.Error()})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error-get-provider": err.Error()})
 		return
 	}
 
@@ -86,24 +85,39 @@ func (h HttpServer) GetProvider(c *gin.Context) {
 // @Summary			Получить список всех поставщиков.
 // @Description		Return Providers list.
 // @Tags			Provider
+// @Param        limit  query   string  true  "limit records on page"
+// @Param        offset  query   string  true  "start of record output"
 // @Produce      json
 // @Success			200 {object} []ProviderResponse
 // @failure			404 {string} err.Error()
 // @Router			/providers [get]
 func (h HttpServer) GetProviders(c *gin.Context) {
-	limit, err := strconv.Atoi(c.Param("limit"))
+	limit_query := c.Query("limit")
+	offset_query := c.Query("offset")
+
+	limit, err := strconv.Atoi(limit_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-limit": err.Error()})
 		return
 	}
-	offset, err := strconv.Atoi(c.Param("offset"))
+
+	offset, err := strconv.Atoi(offset_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-offset": err.Error()})
 		return
 	}
+	if limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"limit-must-be-greater-then-zero": ""})
+		return
+	}
+	if offset < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"offset-must-be-greater-then-zero": ""})
+		return
+	}
+
 	providers, err := h.providerService.GetProviders(c, limit, offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error get providers": err.Error()})
 		return
 	}
 
@@ -112,5 +126,5 @@ func (h HttpServer) GetProviders(c *gin.Context) {
 		response = append(response, toResponseProvider(provider))
 	}
 
-	c.JSON(http.StatusCreated, response)
+	c.JSON(http.StatusOK, response)
 }
