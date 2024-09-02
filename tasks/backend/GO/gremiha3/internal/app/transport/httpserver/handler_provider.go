@@ -52,7 +52,7 @@ func (h HttpServer) CreateProvider(c *gin.Context) {
 // GetProviderTags 		godoc
 // @Summary			Посмотреть постащика по его id.
 // @Description		Return Provider with "id" number.
-// @Param        id  query   string  false  "id of the provider"
+// @Param        id  query   string  false  "id of the provider" example(1)
 // @Tags			Provider
 // @Success			200 {object} ProviderResponse
 // @failure			404 {string} err.Error()
@@ -85,8 +85,8 @@ func (h HttpServer) GetProvider(c *gin.Context) {
 // @Summary			Получить список всех поставщиков.
 // @Description		Return Providers list.
 // @Tags			Provider
-// @Param        limit  query   string  true  "limit records on page"
-// @Param        offset  query   string  true  "start of record output"
+// @Param        limit  query   string  true  "limit records on page" example(10)
+// @Param        offset  query   string  true  "start of record output" example(1)
 // @Produce      json
 // @Success			200 {object} []ProviderResponse
 // @failure			404 {string} err.Error()

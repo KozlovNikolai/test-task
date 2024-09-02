@@ -13,8 +13,8 @@ import (
 // GetUserTags 		godoc
 // @Summary			Посмотреть пользователя по его id или логину.
 // @Description		Получить пользователя по его id ли логину.
-// @Param        id  query   string  false  "id of the user"
-// @Param        login  query   string  false  "login of the user"
+// @Param        id  query   string  false  "id of the user" example(1)
+// @Param        login  query   string  false  "login of the user" example(cmd@cmd.ru)
 // @Tags			User
 // @Success			200 {object} UserResponse
 // @failure			404 {string} err.Error()
@@ -73,8 +73,8 @@ func (h HttpServer) GetUser(c *gin.Context) {
 // @Summary			Получить список всех пользователей.
 // @Description		Return users list.
 // @Tags			User
-// @Param        limit  query   string  true  "limit records on page"
-// @Param        offset  query   string  true  "start of record output"
+// @Param        limit  query   string  true  "limit records on page" example(10)
+// @Param        offset  query   string  true  "start of record output" example(1)
 // @Produce      json
 // @Success			200 {object} []UserResponse
 // @failure			404 {string} err.Error()

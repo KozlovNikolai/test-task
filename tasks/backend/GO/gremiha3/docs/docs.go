@@ -254,12 +254,37 @@ const docTemplate = `{
             }
         },
         "/product": {
-            "post": {
-                "security": [
+            "get": {
+                "description": "Return product with \"id\" number.",
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Посмотреть товар по его id.",
+                "parameters": [
                     {
-                        "BearerAuth": []
+                        "type": "string",
+                        "example": "1",
+                        "description": "id of the product",
+                        "name": "id",
+                        "in": "query"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpserver.ProductResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
                 "description": "Save register data of user in Repo.",
                 "produces": [
                     "application/json"
@@ -301,38 +326,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/product/{product_id}": {
-            "get": {
-                "description": "Return product with \"id\" number.",
-                "tags": [
-                    "Product"
-                ],
-                "summary": "Посмотреть товар по его id.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Product ID",
-                        "name": "product_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/httpserver.ProductResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/products": {
             "get": {
                 "description": "Return products list.",
@@ -343,6 +336,24 @@ const docTemplate = `{
                     "Product"
                 ],
                 "summary": "Получить список всех товаров.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "10",
+                        "description": "limit records on page",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1",
+                        "description": "start of record output",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -372,6 +383,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "1",
                         "description": "id of the provider",
                         "name": "id",
                         "in": "query"
@@ -447,6 +459,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "10",
                         "description": "limit records on page",
                         "name": "limit",
                         "in": "query",
@@ -454,6 +467,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "1",
                         "description": "start of record output",
                         "name": "offset",
                         "in": "query",
@@ -575,12 +589,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "1",
                         "description": "id of the user",
                         "name": "id",
                         "in": "query"
                     },
                     {
                         "type": "string",
+                        "example": "cmd@cmd.ru",
                         "description": "login of the user",
                         "name": "login",
                         "in": "query"
@@ -615,6 +631,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "10",
                         "description": "limit records on page",
                         "name": "limit",
                         "in": "query",
@@ -622,6 +639,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "1",
                         "description": "start of record output",
                         "name": "offset",
                         "in": "query",

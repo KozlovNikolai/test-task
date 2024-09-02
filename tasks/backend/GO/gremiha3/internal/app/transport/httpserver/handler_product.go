@@ -16,7 +16,6 @@ import (
 // @Param				product body ProductRequest true "Create product"
 // @Produce				application/json
 // @Tags				Product
-// @Security     	BearerAuth
 // @Success				200 {object} ProductResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
@@ -53,13 +52,13 @@ func (h HttpServer) CreateProduct(c *gin.Context) {
 // GetProductTags 		godoc
 // @Summary			Посмотреть товар по его id.
 // @Description		Return product with "id" number.
-// @Param			product_id path int true "Product ID"
+// @Param        id  query   string  false  "id of the product" example(1)
 // @Tags			Product
 // @Success			200 {object} ProductResponse
 // @failure			404 {string} err.Error()
-// @Router			/product/{product_id} [get]
+// @Router			/product [get]
 func (h HttpServer) GetProduct(c *gin.Context) {
-	productID, err := strconv.Atoi(c.Param("id"))
+	productID, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-product-id": err.Error()})
 		return
@@ -71,7 +70,7 @@ func (h HttpServer) GetProduct(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{"product-not-found": err.Error()})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error-get-product": err.Error()})
 		return
 	}
 
@@ -85,24 +84,39 @@ func (h HttpServer) GetProduct(c *gin.Context) {
 // @Summary			Получить список всех товаров.
 // @Description		Return products list.
 // @Tags			Product
+// @Param        limit  query   string  true  "limit records on page" example(10)
+// @Param        offset  query   string  true  "start of record output" example(1)
 // @Produce      json
 // @Success			200 {object} []ProductResponse
 // @failure			404 {string} err.Error()
 // @Router			/products [get]
 func (h HttpServer) GetProducts(c *gin.Context) {
-	limit, err := strconv.Atoi(c.Param("limit"))
+	limit_query := c.Query("limit")
+	offset_query := c.Query("offset")
+
+	limit, err := strconv.Atoi(limit_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-limit": err.Error()})
 		return
 	}
-	offset, err := strconv.Atoi(c.Param("offset"))
+
+	offset, err := strconv.Atoi(offset_query)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-offset": err.Error()})
 		return
 	}
+	if limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"limit-must-be-greater-then-zero": ""})
+		return
+	}
+	if offset < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"offset-must-be-greater-then-zero": ""})
+		return
+	}
+
 	products, err := h.productService.GetProducts(c, limit, offset)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error get products": err.Error()})
 		return
 	}
 
@@ -111,5 +125,5 @@ func (h HttpServer) GetProducts(c *gin.Context) {
 		response = append(response, toResponseProduct(product))
 	}
 
-	c.JSON(http.StatusCreated, response)
+	c.JSON(http.StatusOK, response)
 }

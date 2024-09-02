@@ -85,21 +85,21 @@ func (repo *ProductRepo) GetProducts(_ context.Context, limit int, offset int) (
 	}
 	sort.Ints(keys)
 	// выбираем записи с нужными ключами
-	var Products []models.Product
-	for i := offset; i < offset+limit && i < len(keys); i++ {
-		Products = append(Products, repo.products[i])
+	var products []models.Product
+	for i := offset; i < offset+limit && i <= len(keys); i++ {
+		products = append(products, repo.products[i])
 	}
 
 	// мапим массив моделей в массив доменов
-	domainProducts := make([]domain.Product, len(Products))
-	for i, Product := range Products {
-		domainProduct, err := productToDomain(Product)
+	domainproducts := make([]domain.Product, len(products))
+	for i, product := range products {
+		domainproduct, err := productToDomain(product)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create domain Product: %w", err)
+			return nil, fmt.Errorf("failed to create domain User: %w", err)
 		}
-		domainProducts[i] = domainProduct
+		domainproducts[i] = domainproduct
 	}
-	return domainProducts, nil
+	return domainproducts, nil
 }
 
 // UpdateProduct implements services.IProductRepository.

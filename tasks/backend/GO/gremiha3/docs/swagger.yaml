@@ -254,6 +254,26 @@ paths:
       tags:
       - OrderState
   /product:
+    get:
+      description: Return product with "id" number.
+      parameters:
+      - description: id of the product
+        example: "1"
+        in: query
+        name: id
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpserver.ProductResponse'
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Посмотреть товар по его id.
+      tags:
+      - Product
     post:
       description: Save register data of user in Repo.
       parameters:
@@ -278,35 +298,25 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      security:
-      - BearerAuth: []
       summary: Добавить товар.
-      tags:
-      - Product
-  /product/{product_id}:
-    get:
-      description: Return product with "id" number.
-      parameters:
-      - description: Product ID
-        in: path
-        name: product_id
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/httpserver.ProductResponse'
-        "404":
-          description: Not Found
-          schema:
-            type: string
-      summary: Посмотреть товар по его id.
       tags:
       - Product
   /products:
     get:
       description: Return products list.
+      parameters:
+      - description: limit records on page
+        example: "10"
+        in: query
+        name: limit
+        required: true
+        type: string
+      - description: start of record output
+        example: "1"
+        in: query
+        name: offset
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -328,6 +338,7 @@ paths:
       description: Return Provider with "id" number.
       parameters:
       - description: id of the provider
+        example: "1"
         in: query
         name: id
         type: string
@@ -375,11 +386,13 @@ paths:
       description: Return Providers list.
       parameters:
       - description: limit records on page
+        example: "10"
         in: query
         name: limit
         required: true
         type: string
       - description: start of record output
+        example: "1"
         in: query
         name: offset
         required: true
@@ -463,10 +476,12 @@ paths:
       description: Получить пользователя по его id ли логину.
       parameters:
       - description: id of the user
+        example: "1"
         in: query
         name: id
         type: string
       - description: login of the user
+        example: cmd@cmd.ru
         in: query
         name: login
         type: string
@@ -487,11 +502,13 @@ paths:
       description: Return users list.
       parameters:
       - description: limit records on page
+        example: "10"
         in: query
         name: limit
         required: true
         type: string
       - description: start of record output
+        example: "1"
         in: query
         name: offset
         required: true
