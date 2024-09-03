@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/KozlovNikolai/test-task/internal/app/domain"
+	"github.com/KozlovNikolai/test-task/internal/pkg/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,11 +17,21 @@ import (
 // @Param				item body ItemRequest true "Create item"
 // @Produce				application/json
 // @Tags				Item
+// @Security			BearerAuth
 // @Success				200 {object} ItemResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
 // @Router				/item [post]
 func (h HttpServer) CreateItem(c *gin.Context) {
+	// Auth
+	// check auth
+	userCtx, err := getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"get orders": domain.ErrNoUserInContext})
+		return
+	}
+
+	//#####################
 	var itemRequest ItemRequest
 	if err := c.ShouldBindJSON(&itemRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-json": err.Error()})
@@ -35,6 +46,23 @@ func (h HttpServer) CreateItem(c *gin.Context) {
 	item, err := toDomainItem(itemRequest)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error creating domain item": err.Error()})
+		return
+	}
+	// получаем заказ
+	order, err := h.orderService.GetOrder(c, item.OrderID())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error get order": err.Error()})
+		return
+	}
+	// получаем пользователя
+	user, err := h.userService.GetUserByID(c, order.UserID())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error get user": err.Error()})
+		return
+	}
+	// если пользователь не владелец и не админ, то выходим
+	if userCtx.ID() != user.ID() && userCtx.Role() != config.AdminRole {
+		c.JSON(http.StatusUnauthorized, gin.H{"invalid user id or role": domain.ErrInvalidUserLogin.Error()})
 		return
 	}
 
@@ -54,6 +82,7 @@ func (h HttpServer) CreateItem(c *gin.Context) {
 // @Description		Return item with "id" number.
 // @Param        id  query   string  false  "id of the item" example(1)  default(1)
 // @Tags			Item
+// @Security			BearerAuth
 // @Success			200 {object} ItemResponse
 // @failure			404 {string} err.Error()
 // @Router			/item [get]
@@ -64,7 +93,14 @@ func (h HttpServer) GetItem(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-item-id": err.Error()})
 		return
 	}
-
+	// Auth
+	// check auth
+	userCtx, err := getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"get orders": domain.ErrNoUserInContext})
+		return
+	}
+	// получаем запись заказа
 	item, err := h.itemService.GetItem(c, itemID)
 	if err != nil {
 		if errors.Is(err, domain.ErrNotFound) {
@@ -74,7 +110,23 @@ func (h HttpServer) GetItem(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error-get-item": err.Error()})
 		return
 	}
-
+	// получаем заказ
+	order, err := h.orderService.GetOrder(c, item.OrderID())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error get order": err.Error()})
+		return
+	}
+	// получаем пользователя
+	user, err := h.userService.GetUserByID(c, order.UserID())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error get user": err.Error()})
+		return
+	}
+	// если пользователь не владелец и не админ, то выходим
+	if userCtx.ID() != user.ID() && userCtx.Role() != config.AdminRole {
+		c.JSON(http.StatusUnauthorized, gin.H{"invalid user id or role": domain.ErrInvalidUserLogin.Error()})
+		return
+	}
 	response := toResponseItem(item)
 
 	c.JSON(http.StatusCreated, response)
@@ -89,6 +141,7 @@ func (h HttpServer) GetItem(c *gin.Context) {
 // @Param        offset  query   string  true  "start of record output" example(0)  default(0)
 // @Param        orderid  query   string  true  "filter by order id" example(1)  default(1)
 // @Produce      json
+// @Security			BearerAuth
 // @Success			200 {object} []ItemResponse
 // @failure			404 {string} err.Error()
 // @Router			/items [get]
@@ -125,7 +178,30 @@ func (h HttpServer) GetItems(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"userid-must-be-greater-then-zero": ""})
 		return
 	}
-
+	// Auth
+	// check auth
+	userCtx, err := getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"get orders": domain.ErrNoUserInContext})
+		return
+	}
+	// получаем заказ
+	order, err := h.orderService.GetOrder(c, orderid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error get order": err.Error()})
+		return
+	}
+	// получаем пользователя
+	user, err := h.userService.GetUserByID(c, order.ID())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error get user": err.Error()})
+		return
+	}
+	// если пользователь не владелец и не админ, то выходим
+	if userCtx.ID() != user.ID() && userCtx.Role() != config.AdminRole {
+		c.JSON(http.StatusUnauthorized, gin.H{"invalid user id or role": domain.ErrInvalidUserLogin.Error()})
+		return
+	}
 	items, err := h.itemService.GetItems(c, limit, offset, orderid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error get items": err.Error()})

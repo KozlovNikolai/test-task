@@ -6,11 +6,12 @@ import (
 	"time"
 
 	"github.com/KozlovNikolai/test-task/internal/app/domain"
+	"github.com/KozlovNikolai/test-task/internal/pkg/config"
 	"github.com/golang-jwt/jwt"
 )
 
 // TODO: move to secrets
-var jwtSecretKey = []byte("very-secret-key")
+var jwtSecretKey = []byte(config.JwtKey)
 
 // TokenService is a token service
 type TokenService struct {
@@ -25,18 +26,18 @@ func NewTokenService(ttl time.Duration) TokenService {
 }
 
 type UserClaims struct {
-	ID    int    `json:"id"`
-	Login string `json:"login"`
-	Role  string `json:"role"`
+	AuthID    int    `json:"auth_id"`
+	AuthLogin string `json:"auth_login"`
+	AuthRole  string `json:"auth_role"`
 	jwt.StandardClaims
 }
 
 // GenerateToken generates a token
 func (s TokenService) GenerateToken(user domain.User) (string, error) {
 	payload := UserClaims{
-		ID:    user.ID(),
-		Login: user.Login(),
-		Role:  user.Role(),
+		AuthID:    user.ID(),
+		AuthLogin: user.Login(),
+		AuthRole:  user.Role(),
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
@@ -76,8 +77,8 @@ func (s TokenService) GetUser(token string) (domain.User, error) {
 
 func userClaimsToDomainUser(claims UserClaims) (domain.User, error) {
 	return domain.NewUser(domain.NewUserData{
-		ID:    claims.ID,
-		Login: claims.Login,
-		Role:  claims.Role,
+		ID:    claims.AuthID,
+		Login: claims.AuthLogin,
+		Role:  claims.AuthRole,
 	})
 }

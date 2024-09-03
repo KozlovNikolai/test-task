@@ -16,6 +16,7 @@ import (
 // @Param				product body ProductRequest true "Create product"
 // @Produce				application/json
 // @Tags				Product
+// @Security			BearerAuth
 // @Success				200 {object} ProductResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()

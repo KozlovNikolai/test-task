@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/item": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return item with \"id\" number.",
                 "tags": [
                     "Item"
@@ -48,6 +53,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Add product to order.",
                 "produces": [
                     "application/json"
@@ -91,6 +101,11 @@ const docTemplate = `{
         },
         "/items": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return items list by order id.",
                 "produces": [
                     "application/json"
@@ -149,6 +164,11 @@ const docTemplate = `{
         },
         "/order": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return Order with \"id\" number.",
                 "tags": [
                     "Order"
@@ -180,6 +200,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Создание заказа для дальнейшего его заполнения.",
                 "produces": [
                     "application/json"
@@ -223,6 +248,11 @@ const docTemplate = `{
         },
         "/orders": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return Orders list.",
                 "produces": [
                     "application/json"
@@ -281,6 +311,11 @@ const docTemplate = `{
         },
         "/orderstate": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return OrderState with \"id\" number.",
                 "tags": [
                     "OrderState"
@@ -312,6 +347,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Создание типа статуса заказа.",
                 "produces": [
                     "application/json"
@@ -355,6 +395,11 @@ const docTemplate = `{
         },
         "/orderstates": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return OrderStates list.",
                 "produces": [
                     "application/json"
@@ -435,6 +480,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Save register data of user in Repo.",
                 "produces": [
                     "application/json"
@@ -557,6 +607,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Save register data of user in Repo.",
                 "produces": [
                     "application/json"
@@ -735,6 +790,11 @@ const docTemplate = `{
         },
         "/user": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Получить пользователя по его id ли логину.",
                 "tags": [
                     "User"
@@ -776,6 +836,11 @@ const docTemplate = `{
         },
         "/users": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Return users list.",
                 "produces": [
                     "application/json"

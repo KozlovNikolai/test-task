@@ -22,9 +22,9 @@ type inMemStore struct {
 func NewInMemRepo() *inMemStore {
 	return &inMemStore{
 		users: map[int]models.User{
-			1: {ID: 1, Login: "cmd@cmd.ru", Password: "pass", Role: "regular"},
-			2: {ID: 2, Login: "cmd@cmd.org", Password: "pass", Role: "regular"},
-			3: {ID: 3, Login: "cmd@cmd.com", Password: "pass", Role: "regular"},
+			1: {ID: 1, Login: "cmd@cmd.ru", Password: "$2a$10$42ivYqjjpyKLmg8hnV7XROYJHOlhyW4lpndm7CCjee/VVQbLkYuz6", Role: "admin"},
+			2: {ID: 2, Login: "cmd@cmd.org", Password: "$2a$10$42ivYqjjpyKLmg8hnV7XROYJHOlhyW4lpndm7CCjee/VVQbLkYuz6", Role: "regular"},
+			3: {ID: 3, Login: "cmd@cmd.com", Password: "$2a$10$42ivYqjjpyKLmg8hnV7XROYJHOlhyW4lpndm7CCjee/VVQbLkYuz6", Role: "regular"},
 		},
 		nextUsersID: 4,
 		providers: map[int]models.Provider{

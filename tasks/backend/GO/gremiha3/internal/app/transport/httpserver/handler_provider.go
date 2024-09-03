@@ -16,6 +16,7 @@ import (
 // @Param				Provider body ProviderRequest true "Create Provider"
 // @Produce				application/json
 // @Tags				Provider
+// @Security		BearerAuth
 // @Success				200 {object} ProviderResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()

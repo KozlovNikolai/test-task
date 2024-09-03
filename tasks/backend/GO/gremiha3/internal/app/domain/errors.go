@@ -8,6 +8,7 @@ var (
 	ErrNil                = errors.New("nil data")
 	ErrNegative           = errors.New("negative value")
 	ErrInvalidUserID      = errors.New("invalid user ID")
+	ErrInvalidUserLogin   = errors.New("invalid user login")
 	ErrInvalidProviderIDs = errors.New("invalid provider IDs")
 	ErrNoUserInContext    = errors.New("no user in context")
 	ErrInvalidValue       = errors.New("invalid value")

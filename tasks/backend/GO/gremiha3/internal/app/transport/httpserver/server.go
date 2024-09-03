@@ -13,7 +13,7 @@ import (
 	"github.com/KozlovNikolai/test-task/internal/app/repository/inmemrepo"
 	"github.com/KozlovNikolai/test-task/internal/app/repository/pgrepo"
 	"github.com/KozlovNikolai/test-task/internal/app/services"
-	"github.com/KozlovNikolai/test-task/internal/middlewares"
+	"github.com/KozlovNikolai/test-task/internal/app/transport/middlewares"
 	"github.com/KozlovNikolai/test-task/internal/pkg/config"
 	"github.com/KozlovNikolai/test-task/internal/pkg/pg"
 	"github.com/gin-contrib/cors"
@@ -112,38 +112,42 @@ func NewServer() *Server {
 	// add swagger
 	server.router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	root := server.router.Group("/")
-	root.POST("signup", httpServer.SignUp)
-	root.POST("signin", httpServer.SignIn)
+	open := server.router.Group("/")
+	open.POST("signup", httpServer.SignUp)
+	open.POST("signin", httpServer.SignIn)
 
-	root.GET("user", httpServer.GetUser)
-	root.GET("users", httpServer.GetUsers)
+	open.GET("provider", httpServer.GetProvider)
+	open.GET("providers", httpServer.GetProviders)
 
-	root.POST("provider", httpServer.CreateProvider)
-	root.GET("provider", httpServer.GetProvider)
-	root.GET("providers", httpServer.GetProviders)
-
-	root.POST("product", httpServer.CreateProduct)
-	root.GET("product", httpServer.GetProduct)
-	root.GET("products", httpServer.GetProducts)
-
-	root.POST("orderstate", httpServer.CreateOrderState)
-	root.GET("orderstate", httpServer.GetOrderState)
-	root.GET("orderstates", httpServer.GetOrderStates)
-
-	root.POST("order", httpServer.CreateOrder)
-	root.GET("order", httpServer.GetOrder)
-	root.GET("orders", httpServer.GetOrders)
-
-	root.POST("item", httpServer.CreateItem)
-	root.GET("item", httpServer.GetItem)
-	root.GET("items", httpServer.GetItems)
-	//#################################################################################
+	open.GET("product", httpServer.GetProduct)
+	open.GET("products", httpServer.GetProducts)
 
 	// Закрытые маршруты
-	authorized := server.router.Group("/")
-	authorized.Use(middlewares.AuthMiddleware())
+	// доступ только для администратора
+	admin := server.router.Group("/")
+	admin.Use(httpServer.CheckAdmin())
 
+	admin.GET("users", httpServer.GetUsers)
+	admin.POST("provider", httpServer.CreateProvider)
+	admin.POST("orderstate", httpServer.CreateOrderState)
+	admin.GET("orderstates", httpServer.GetOrderStates)
+	admin.POST("product", httpServer.CreateProduct)
+
+	// доступ для любых зарегистрированных пользователей
+	authorized := server.router.Group("/")
+	authorized.Use(httpServer.CheckAuthorizedUser())
+
+	authorized.GET("user", httpServer.GetUser)
+
+	authorized.POST("order", httpServer.CreateOrder)
+	authorized.GET("order", httpServer.GetOrder)
+	authorized.GET("orders", httpServer.GetOrders)
+
+	authorized.GET("orderstate", httpServer.GetOrderState)
+
+	authorized.POST("item", httpServer.CreateItem)
+	authorized.GET("item", httpServer.GetItem)
+	authorized.GET("items", httpServer.GetItems)
 	return server
 }
 

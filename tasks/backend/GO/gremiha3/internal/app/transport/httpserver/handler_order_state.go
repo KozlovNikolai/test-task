@@ -16,6 +16,7 @@ import (
 // @Param				orderState body OrderStateRequest true "Create Order State type"
 // @Produce				application/json
 // @Tags				OrderState
+// @Security			BearerAuth
 // @Success				200 {object} OrderStateResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
@@ -54,6 +55,7 @@ func (h HttpServer) CreateOrderState(c *gin.Context) {
 // @Description		Return OrderState with "id" number.
 // @Param        id  query   string  false  "id of the order state" example(1) default(1)
 // @Tags			OrderState
+// @Security			BearerAuth
 // @Success			200 {object} OrderStateResponse
 // @failure			404 {string} err.Error()
 // @Router			/orderstate [get]
@@ -76,7 +78,7 @@ func (h HttpServer) GetOrderState(c *gin.Context) {
 
 	response := toResponseOrderState(orderState)
 
-	c.JSON(http.StatusCreated, response)
+	c.JSON(http.StatusOK, response)
 }
 
 // GetOrderStates is ...
@@ -84,6 +86,7 @@ func (h HttpServer) GetOrderState(c *gin.Context) {
 // @Summary			Получить список всех статусов.
 // @Description		Return OrderStates list.
 // @Tags			OrderState
+// @Security			BearerAuth
 // @Param        limit  query   string  true  "limit records on page" example(10) default(10)
 // @Param        offset  query   string  true  "start of record output" example(0) default(0)
 // @Produce      json

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/KozlovNikolai/test-task/internal/app/domain"
+	"github.com/KozlovNikolai/test-task/internal/pkg/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,7 @@ import (
 // @Param				order body OrderRequest true "Create Order"
 // @Produce				application/json
 // @Tags				Order
+// @Security			BearerAuth
 // @Success				201 {object} OrderResponse
 // @failure				400 {string} err.Error()
 // @failure				500 {string} err.Error()
@@ -54,10 +56,18 @@ func (h HttpServer) CreateOrder(c *gin.Context) {
 // @Description		Return Order with "id" number.
 // @Param        id  query   string  false  "id of the order" example(1)   default(1)
 // @Tags			Order
+// @Security			BearerAuth
 // @Success			200 {object} OrderResponse
 // @failure			404 {string} err.Error()
 // @Router			/order [get]
 func (h HttpServer) GetOrder(c *gin.Context) {
+	// check auth
+	userCtx, err := getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"get orders": domain.ErrNoUserInContext})
+		return
+	}
+
 	orderID, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-order-id": err.Error()})
@@ -71,6 +81,11 @@ func (h HttpServer) GetOrder(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"": err.Error()})
+		return
+	}
+
+	if userCtx.ID() != order.UserID() && userCtx.Role() != config.AdminRole {
+		c.JSON(http.StatusUnauthorized, gin.H{"invalid user id or role": domain.ErrInvalidUserLogin.Error()})
 		return
 	}
 
@@ -88,6 +103,7 @@ func (h HttpServer) GetOrder(c *gin.Context) {
 // @Param        offset  query   string  true  "start of record output" example(0) default(0)
 // @Param        userid  query   string  true  "filter by user id" example(1) default(1)
 // @Produce      json
+// @Security			BearerAuth
 // @Success			200 {object} []OrderResponse
 // @failure			404 {string} err.Error()
 // @Router			/orders [get]
@@ -111,6 +127,12 @@ func (h HttpServer) GetOrders(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"invalid-userid": err.Error()})
 		return
 	}
+	// check auth
+	userCtx, err := getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"get orders": domain.ErrNoUserInContext})
+		return
+	}
 
 	if limit < 1 {
 		c.JSON(http.StatusBadRequest, gin.H{"limit-must-be-greater-then-zero": ""})
@@ -124,7 +146,10 @@ func (h HttpServer) GetOrders(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"userid-must-be-greater-then-zero": ""})
 		return
 	}
-
+	if userCtx.ID() != userid && userCtx.Role() != config.AdminRole {
+		c.JSON(http.StatusUnauthorized, gin.H{"invalid user id or role": domain.ErrInvalidUserLogin.Error()})
+		return
+	}
 	orders, err := h.orderService.GetOrders(c, limit, offset, userid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error get orders": err.Error()})

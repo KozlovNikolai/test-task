@@ -32,7 +32,8 @@ var (
 	// CertFile is ...
 	CertFile = os.Getenv("TLS_CERT")
 	// KeyFile is ...
-	KeyFile = os.Getenv("TLS_KEY")
+	KeyFile   = os.Getenv("TLS_KEY")
+	AdminRole = "admin"
 )
 
 // MustLoad is ...

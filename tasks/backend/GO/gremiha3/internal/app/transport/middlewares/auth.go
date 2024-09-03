@@ -8,6 +8,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+const (
+	AuthorizationHeader = "Authorization"
+	BearerPrefix        = "Bearer "
+)
+
 // Claims is ...
 type Claims struct {
 	AuthID    int    `json:"auth_id"`
@@ -18,13 +23,13 @@ type Claims struct {
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
+		authHeader := c.GetHeader(AuthorizationHeader)
 		if authHeader == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
 			return
 		}
 
-		tokenString := authHeader[len("Bearer "):]
+		tokenString := authHeader[len(BearerPrefix):]
 		claims := &Claims{}
 		tkn, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return config.JwtKey, nil
